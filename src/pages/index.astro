@@ -1,13 +1,14 @@
 ---
+import { type CollectionEntry, getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import MainCard from "@/components/MainCard.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { getCollection, type CollectionEntry } from "astro:content";
 
 const posts = await getCollection("blog");
 const recentPosts = posts
-  .sort((a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
-    new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+  .sort(
+    (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
+      new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
   )
   .slice(0, 5);
 ---
