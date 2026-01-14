@@ -1,0 +1,19 @@
+---
+// Waline 评论组件
+---
+
+<div id="waline" class="mt-8 pt-8 border-t border-base-300"></div>
+
+<script>
+  import { init } from '@waline/client';
+  import '@waline/client/style';
+
+  init({
+    el: '#waline',
+    serverURL: 'https://comment.cyb1.org',
+    dark: 'html[data-theme="dracula"]',
+    locale: {
+      placeholder: '欢迎留言~',
+    },
+  });
+</script>

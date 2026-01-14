@@ -1,5 +1,6 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
+import Comment from "@components/widgets/Comment.astro";
 import License from "@components/widgets/License.astro";
 import PostFilter from "@components/widgets/PostFilter.astro";
 import PostInfo from "@components/widgets/PostInfo.astro";
@@ -61,6 +62,7 @@ const url = new URL(`/blog/${blog.slug}`, Astro.url.origin);
           word={remarkPluginFrontmatter.totalCharCount}
           time={remarkPluginFrontmatter.readingTime}
         />
+        <Comment />
       </div>
     </div>
   </MainCard>
