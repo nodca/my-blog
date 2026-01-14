@@ -52,7 +52,7 @@ const recentPosts = posts
         </h2>
 
         <div class="space-y-4">
-          {recentPosts.map((post) => (
+          {recentPosts.map((post: CollectionEntry<"blog">) => (
             <a href={`/blog/${post.slug}`} class="card bg-base-200 hover:bg-base-300 transition-colors p-4 block">
               <div class="flex justify-between items-start gap-4">
                 <div>
