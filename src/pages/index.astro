@@ -8,7 +8,7 @@ const posts = await getCollection("blog");
 const recentPosts = posts
   .sort(
     (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
-      new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+      new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
   )
   .slice(0, 5);
 ---
