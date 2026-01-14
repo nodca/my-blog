@@ -54,7 +54,7 @@ site:
 user:
   name: nodca # 用户名
   site: "https://cyb1.org" # 用户的网站链接
-  avatar: /profile.png # 用户头像路径
+  avatar: /profile.jpg # 用户头像路径
   sidebar: # 侧边栏配置
     social:
       - href: "https://github.com/nodca"
