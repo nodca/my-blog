@@ -32,22 +32,24 @@
       placeholder: '欢迎留言~',
     });
 
-    // 在邮箱输入框旁添加提示
+    // 在邮箱标签旁添加提示
     function addEmailHint() {
-      var emailInput = document.querySelector('.atk-email-input') ||
-                       document.querySelector('input[name="email"]') ||
-                       document.querySelector('input[placeholder*="mail" i]');
-      if (emailInput && !document.querySelector('.email-hint')) {
-        var hint = document.createElement('span');
-        hint.className = 'email-hint';
-        hint.textContent = '(不会公开)';
-        if (emailInput.parentNode) {
-          emailInput.parentNode.style.position = 'relative';
-          emailInput.insertAdjacentElement('afterend', hint);
+      // 查找邮箱标签（而不是输入框）
+      var labels = document.querySelectorAll('.atk-header-cell');
+      labels.forEach(function(cell) {
+        var label = cell.querySelector('.atk-label');
+        if (label && (label.textContent.includes('邮箱') || label.textContent.toLowerCase().includes('mail'))) {
+          if (!cell.querySelector('.email-hint')) {
+            var hint = document.createElement('span');
+            hint.className = 'email-hint';
+            hint.textContent = '(不会公开)';
+            label.insertAdjacentElement('afterend', hint);
+          }
         }
-      }
+      });
     }
 
+    // 多次尝试添加提示（等待 Artalk 渲染完成）
     setTimeout(addEmailHint, 500);
     setTimeout(addEmailHint, 1000);
     setTimeout(addEmailHint, 2000);
