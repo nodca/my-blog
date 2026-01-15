@@ -1,10 +1,10 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import { DATE_FORMAT } from "@config";
-import MainCard from "@/components/MainCard.astro";
-import BaseLayout from "@/layouts/BaseLayout.astro";
 import dayjs from "@utils/dayjs";
 import { Icon } from "astro-icon/components";
+import MainCard from "@/components/MainCard.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
 const posts = await getCollection("blog");
 const recentPosts = posts
