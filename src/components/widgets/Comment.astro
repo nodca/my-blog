@@ -17,7 +17,12 @@
 </style>
 
 <script is:inline>
-  document.addEventListener('DOMContentLoaded', function() {
+  function initArtalk() {
+    // 清除之前的实例
+    var container = document.querySelector('#artalk');
+    if (!container) return;
+    container.innerHTML = '';
+
     var artalk = Artalk.init({
       el: '#artalk',
       server: 'https://comment.cyb1.org',
@@ -43,9 +48,15 @@
       }
     }
 
-    // 多次尝试添加提示（等待 Artalk 渲染完成）
     setTimeout(addEmailHint, 500);
     setTimeout(addEmailHint, 1000);
     setTimeout(addEmailHint, 2000);
-  });
+  }
+
+  // 初始加载
+  document.addEventListener('DOMContentLoaded', initArtalk);
+
+  // Astro 页面切换后重新初始化
+  document.addEventListener('astro:page-load', initArtalk);
+  document.addEventListener('astro:after-swap', initArtalk);
 </script>
