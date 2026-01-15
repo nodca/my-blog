@@ -1,19 +1,21 @@
 ---
-// Waline 评论组件
+// Artalk 评论组件
 ---
 
-<div id="waline" class="mt-8 pt-8 border-t border-base-300"></div>
+<div id="artalk" class="mt-8 pt-8 border-t border-base-300"></div>
 
-<script>
-  import { init } from '@waline/client';
-  import '@waline/client/style';
+<link href="https://unpkg.com/artalk/dist/Artalk.css" rel="stylesheet" />
+<script is:inline src="https://unpkg.com/artalk/dist/Artalk.js"></script>
 
-  init({
-    el: '#waline',
-    serverURL: 'https://comment.cyb1.org',
-    dark: 'html[data-theme="dracula"]',
-    locale: {
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    Artalk.init({
+      el: '#artalk',
+      server: 'https://comment.cyb1.org',
+      site: 'nodca的博客',
+      pageKey: window.location.pathname,
+      darkMode: document.documentElement.getAttribute('data-theme') === 'dracula',
       placeholder: '欢迎留言~',
-    },
+    });
   });
 </script>
