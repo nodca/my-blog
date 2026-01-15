@@ -1,7 +1,7 @@
 ---
 title: "博客评论系统从 Waline 迁移到 Artalk"
 description: "记录将博客评论系统从 Waline 更换为 Artalk 的过程，包括选型对比和部署配置。"
-pubDate: "Jan 15 2026"
+pubDate: "2026-01-15"
 categories:
   - 技术
   - 教程

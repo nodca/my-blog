@@ -1,7 +1,7 @@
 ---
 title: "从零开始搭建个人网站：服务器、域名与自动化部署全记录"
 description: "记录使用香港服务器、Cloudflare DNS、Caddy反向代理搭建个人网站的完整过程，包括遇到的问题和解决方案。"
-pubDate: "Jan 14 2026"
+pubDate: "2026-01-14"
 image: /image/cloudflare.svg
 categories:
   - 技术
