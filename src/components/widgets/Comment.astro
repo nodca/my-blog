@@ -22,8 +22,8 @@
     container.dataset.loaded = 'true';
 
     // 定义资源 URL (使用国内镜像)
-    var cssUrl = 'https://registry.npmmirror.com/artalk/2.8.7/files/dist/Artalk.css';
-    var jsUrl = 'https://registry.npmmirror.com/artalk/2.8.7/files/dist/Artalk.js';
+    var cssUrl = 'https://registry.npmmirror.com/artalk/2.9.1/files/dist/Artalk.css';
+    var jsUrl = 'https://registry.npmmirror.com/artalk/2.9.1/files/dist/Artalk.js';
 
     // 动态加载 CSS
     var link = document.createElement('link');
@@ -50,8 +50,9 @@
       pageKey: window.location.pathname,
       darkMode: document.documentElement.getAttribute('data-theme') === 'dracula',
       placeholder: '欢迎留言~',
+      useBackendConf: false,
       gravatar: {
-        mirror: 'https://cravatar.cn/avatar/' // 使用 Cravatar 镜像解决头像加载问题
+        mirror: 'https://cravatar.cn/avatar/'
       }
     });
 
@@ -98,18 +99,16 @@
     // 重置加载状态 (用于 Astro 页面切换)
     delete container.dataset.loaded;
 
-    // 如果已经在视口附近，直接加载
-    if ('IntersectionObserver' in window) {
-      var observer = new IntersectionObserver(function(entries) {
-        if (entries[0].isIntersecting) {
-          loadArtalk();
-          observer.disconnect();
-        }
-      }, { rootMargin: '200px' }); // 提前 200px 开始加载
-      observer.observe(container);
+    // 策略优化：不再等待滚动，而是延迟加载 (Idle Load)
+    // 这样既不阻塞首屏，又能保证用户滚下来时通常已经加载好了
+    var loadDelay = 2000; // 2秒后加载
+    
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(function() {
+        setTimeout(loadArtalk, loadDelay);
+      });
     } else {
-      // 降级方案：不支持 Observer 直接加载
-      loadArtalk();
+      setTimeout(loadArtalk, loadDelay + 1000);
     }
   }
 
