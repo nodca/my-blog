@@ -32,27 +32,41 @@
       placeholder: '欢迎留言~',
     });
 
-    // 在邮箱标签旁添加提示
+    // 增强版：在邮箱标签旁添加提示
     function addEmailHint() {
-      // 查找邮箱标签（而不是输入框）
-      var labels = document.querySelectorAll('.atk-header-cell');
-      labels.forEach(function(cell) {
-        var label = cell.querySelector('.atk-label');
-        if (label && (label.textContent.includes('邮箱') || label.textContent.toLowerCase().includes('mail'))) {
-          if (!cell.querySelector('.email-hint')) {
-            var hint = document.createElement('span');
-            hint.className = 'email-hint';
-            hint.textContent = '(不会公开)';
-            label.insertAdjacentElement('afterend', hint);
-          }
-        }
+      // 查找所有可能的邮箱输入框
+      var inputs = document.querySelectorAll('.atk-wrap input[name="email"], .atk-wrap input[type="email"]');
+      
+      inputs.forEach(function(input) {
+        // 找到包含 input 的容器 (通常是 .atk-item 或类似)
+        var item = input.closest('.atk-item') || input.parentElement;
+        if (!item) return;
+
+        // 在容器内查找 label (包含“邮箱”或“Email”文本的元素)
+        var labels = item.querySelectorAll('.atk-label, span, label');
+        
+        labels.forEach(function(label) {
+           // 检查是否已经添加过提示
+           if (label.nextElementSibling && label.nextElementSibling.classList.contains('email-hint')) return; 
+           
+           var text = label.textContent.trim().toLowerCase();
+           // 匹配文本内容
+           if (text === '邮箱' || text === 'email' || text.includes('邮箱')) {
+             var hint = document.createElement('span');
+             hint.className = 'email-hint';
+             hint.textContent = '(不会公开)';
+             label.insertAdjacentElement('afterend', hint);
+           }
+        });
       });
     }
 
-    // 多次尝试添加提示（等待 Artalk 渲染完成）
-    setTimeout(addEmailHint, 500);
-    setTimeout(addEmailHint, 1000);
-    setTimeout(addEmailHint, 2000);
+    // 使用 MutationObserver 监听 DOM 变化，确保 Artalk 渲染完成后立即执行
+    var observer = new MutationObserver(function(mutations) {
+      addEmailHint();
+    });
+
+    observer.observe(container, { childList: true, subtree: true });
   }
 
   // 初始加载
