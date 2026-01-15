@@ -60,32 +60,59 @@
     // 增强版：在邮箱标签旁添加提示
     function addEmailHint() {
       var hintText = '(不会公开)';
-      var inputs = document.querySelectorAll('.atk-wrap input[name="email"], .atk-wrap input[type="email"]');
-      
+      var container = document.querySelector('#artalk');
+      if (!container) return;
+
+      // 1. 找输入框，修改 Placeholder
+      var inputs = container.querySelectorAll('input[name="email"], input[type="email"]');
       inputs.forEach(function(input) {
-        // 策略 1: 直接修改 Placeholder
-        if (input.placeholder && !input.placeholder.includes(hintText)) {
+        if (input.placeholder && input.placeholder.indexOf(hintText) === -1) {
             input.placeholder = input.placeholder + ' ' + hintText;
         }
+      });
 
-        // 策略 2: 尝试在 Label 旁添加文字
-        var item = input.closest('.atk-item') || input.parentElement;
-        if (!item) return;
-
-        var labels = item.querySelectorAll('.atk-label, label');
-        labels.forEach(function(label) {
-           var text = label.textContent.trim().toLowerCase();
-           if ((text === '邮箱' || text === 'email' || text.includes('邮箱')) && !text.includes(hintText)) {
-             if (label.nextElementSibling && label.nextElementSibling.classList.contains('email-hint')) return;
+      // 2. 找 Label，添加可见文字
+      // Artalk 的 Label 通常在 .atk-header-input .atk-item .atk-label 或者是 placeholder 表现
+      // 我们尝试遍历所有包含“邮箱”字的元素
+      var elements = container.getElementsByTagName('*');
+      for (var i = 0; i < elements.length; i++) {
+        var el = elements[i];
+        // 排除 script, style 和我们自己加的 hint
+        if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.classList.contains('email-hint')) continue;
+        
+        // 检查文本内容 (只有当它是叶子节点或只包含文本时)
+        if (el.children.length === 0 && el.textContent) {
+           var text = el.textContent.trim().toLowerCase();
+           if (text === '邮箱' || text === 'email') {
+             // 找到了“邮箱”两个字，检查旁边有没有提示
+             // 这种通常是 Label
+             if (el.nextElementSibling && el.nextElementSibling.classList.contains('email-hint')) continue;
              
+             // 如果父级已经是 hint 了，跳过
+             if (el.parentElement.classList.contains('email-hint')) continue;
+
              var hint = document.createElement('span');
              hint.className = 'email-hint';
              hint.textContent = hintText;
-             label.insertAdjacentElement('afterend', hint);
+             hint.style.color = '#ff6b6b'; // 显眼颜色
+             hint.style.fontSize = '0.8em';
+             hint.style.marginLeft = '5px';
+             
+             // 插入到该元素后面
+             el.insertAdjacentElement('afterend', hint);
            }
-        });
-      });
+        }
+      }
     }
+
+    // 暴力轮询：每 500ms 执行一次，持续 10 秒
+    // 这是为了应对 Artalk 可能的异步渲染或重绘
+    var checkCount = 0;
+    var interval = setInterval(function() {
+      addEmailHint();
+      checkCount++;
+      if (checkCount > 20) clearInterval(interval);
+    }, 500);
 
     var observer = new MutationObserver(function(mutations) {
       addEmailHint();
