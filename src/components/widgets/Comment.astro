@@ -4,9 +4,6 @@
 
 <div id="artalk" class="mt-8 pt-8 border-t border-base-300"></div>
 
-<link href="https://unpkg.com/artalk/dist/Artalk.css" rel="stylesheet" />
-<script is:inline src="https://unpkg.com/artalk/dist/Artalk.js"></script>
-
 <style is:global>
   /* 邮箱提示样式 */
   .email-hint {
@@ -17,8 +14,31 @@
 </style>
 
 <script is:inline>
-  function initArtalk() {
-    // 清除之前的实例
+  function loadArtalk() {
+    var container = document.querySelector('#artalk');
+    if (!container || container.dataset.loaded) return;
+
+    // 标记已开始加载，防止重复执行
+    container.dataset.loaded = 'true';
+
+    // 定义资源 URL (使用国内镜像)
+    var cssUrl = 'https://registry.npmmirror.com/artalk/2.8.7/files/dist/Artalk.css';
+    var jsUrl = 'https://registry.npmmirror.com/artalk/2.8.7/files/dist/Artalk.js';
+
+    // 动态加载 CSS
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = cssUrl;
+    document.head.appendChild(link);
+
+    // 动态加载 JS
+    var script = document.createElement('script');
+    script.src = jsUrl;
+    script.onload = initArtalkInstance;
+    document.body.appendChild(script);
+  }
+
+  function initArtalkInstance() {
     var container = document.querySelector('#artalk');
     if (!container) return;
     container.innerHTML = '';
@@ -30,32 +50,30 @@
       pageKey: window.location.pathname,
       darkMode: document.documentElement.getAttribute('data-theme') === 'dracula',
       placeholder: '欢迎留言~',
+      gravatar: {
+        mirror: 'https://cravatar.cn/avatar/' // 使用 Cravatar 镜像解决头像加载问题
+      }
     });
 
     // 增强版：在邮箱标签旁添加提示
     function addEmailHint() {
       var hintText = '(不会公开)';
-      
-      // 查找所有可能的邮箱输入框
       var inputs = document.querySelectorAll('.atk-wrap input[name="email"], .atk-wrap input[type="email"]');
       
       inputs.forEach(function(input) {
-        // 策略 1: 直接修改 Placeholder (最稳妥，且兼容无 label 的情况)
+        // 策略 1: 直接修改 Placeholder
         if (input.placeholder && !input.placeholder.includes(hintText)) {
             input.placeholder = input.placeholder + ' ' + hintText;
         }
 
-        // 策略 2: 尝试在 Label 旁添加文字 (保留之前的逻辑作为补充)
-        // 找到包含 input 的容器
+        // 策略 2: 尝试在 Label 旁添加文字
         var item = input.closest('.atk-item') || input.parentElement;
         if (!item) return;
 
         var labels = item.querySelectorAll('.atk-label, label');
         labels.forEach(function(label) {
-           // 检查内容是否相关
            var text = label.textContent.trim().toLowerCase();
            if ((text === '邮箱' || text === 'email' || text.includes('邮箱')) && !text.includes(hintText)) {
-             // 检查是否已添加 span
              if (label.nextElementSibling && label.nextElementSibling.classList.contains('email-hint')) return;
              
              var hint = document.createElement('span');
@@ -67,18 +85,38 @@
       });
     }
 
-    // 使用 MutationObserver 监听 DOM 变化，确保 Artalk 渲染完成后立即执行
     var observer = new MutationObserver(function(mutations) {
       addEmailHint();
     });
-
     observer.observe(container, { childList: true, subtree: true });
   }
 
+  function setupLazyLoad() {
+    var container = document.querySelector('#artalk');
+    if (!container) return;
+
+    // 重置加载状态 (用于 Astro 页面切换)
+    delete container.dataset.loaded;
+
+    // 如果已经在视口附近，直接加载
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
+          loadArtalk();
+          observer.disconnect();
+        }
+      }, { rootMargin: '200px' }); // 提前 200px 开始加载
+      observer.observe(container);
+    } else {
+      // 降级方案：不支持 Observer 直接加载
+      loadArtalk();
+    }
+  }
+
   // 初始加载
-  document.addEventListener('DOMContentLoaded', initArtalk);
+  document.addEventListener('DOMContentLoaded', setupLazyLoad);
 
   // Astro 页面切换后重新初始化
-  document.addEventListener('astro:page-load', initArtalk);
-  document.addEventListener('astro:after-swap', initArtalk);
+  document.addEventListener('astro:page-load', setupLazyLoad);
+  document.addEventListener('astro:after-swap', setupLazyLoad);
 </script>
