@@ -7,6 +7,16 @@
 <link href="https://unpkg.com/artalk/dist/Artalk.css" rel="stylesheet" />
 <script is:inline src="https://unpkg.com/artalk/dist/Artalk.js"></script>
 
+<style>
+  /* 在邮箱输入框后添加提示 */
+  .atk-header-input[name="email"]::after {
+    content: "(不会公开)";
+  }
+  .atk-header .atk-header-input[name="email"] {
+    position: relative;
+  }
+</style>
+
 <script is:inline>
   document.addEventListener('DOMContentLoaded', function() {
     Artalk.init({
@@ -17,5 +27,17 @@
       darkMode: document.documentElement.getAttribute('data-theme') === 'dracula',
       placeholder: '欢迎留言~',
     });
+
+    // 在邮箱输入框旁添加提示
+    setTimeout(function() {
+      var emailInput = document.querySelector('.atk-header-input[name="email"]');
+      if (emailInput && !document.querySelector('.email-hint')) {
+        var hint = document.createElement('span');
+        hint.className = 'email-hint';
+        hint.style.cssText = 'font-size: 12px; color: #888; margin-left: 5px;';
+        hint.textContent = '(不会公开显示)';
+        emailInput.parentNode.insertBefore(hint, emailInput.nextSibling);
+      }
+    }, 500);
   });
 </script>
