@@ -1,16 +1,17 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
 const isIndexed = false; // 防止搜索引擎索引
-const title = '访客统计';
-const description = '博客访客统计数据';
+const title = "访客统计";
+const description = "博客访客统计数据";
 
 // 密码哈希（SHA-256）
-const PASSWORD_HASH = 'cde2a9fbf3563f2ce5c1f9793e8823d3a417f38108df6755305a4220e978fd9e';
+const PASSWORD_HASH =
+  "cde2a9fbf3563f2ce5c1f9793e8823d3a417f38108df6755305a4220e978fd9e";
 
 // Artalk API 配置
-const ARTALK_SERVER = 'https://comment.cyb1.org';
-const SITE_NAME = 'nodca的博客';
+const ARTALK_SERVER = "https://comment.cyb1.org";
+const SITE_NAME = "nodca的博客";
 ---
 
 <BaseLayout title={title} description={description} isIndexed={isIndexed}>
