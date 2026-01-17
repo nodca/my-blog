@@ -403,6 +403,23 @@ const SITE_NAME = "nodca的博客";
 
         const pages = data.pages;
 
+        // 为每个页面获取评论数
+        await Promise.all(pages.map(async (page) => {
+          try {
+            const commentRes = await fetch(
+              `${ARTALK_SERVER}/api/v2/comments?site_name=${encodeURIComponent(SITE_NAME)}&page_key=${encodeURIComponent(page.key)}&limit=1`
+            );
+            if (commentRes.ok) {
+              const commentData = await commentRes.json();
+              page.comment_count = commentData.count || 0;
+            } else {
+              page.comment_count = 0;
+            }
+          } catch (e) {
+            page.comment_count = 0;
+          }
+        }));
+
         // 计算总计
         let totalPV = 0;
         let totalComments = 0;
