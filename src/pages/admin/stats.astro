@@ -1,0 +1,513 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const isIndexed = false; // 防止搜索引擎索引
+const title = '访客统计';
+const description = '博客访客统计数据';
+
+// 密码哈希（SHA-256）
+const PASSWORD_HASH = 'cde2a9fbf3563f2ce5c1f9793e8823d3a417f38108df6755305a4220e978fd9e';
+
+// Artalk API 配置
+const ARTALK_SERVER = 'https://comment.cyb1.org';
+const SITE_NAME = 'nodca的博客';
+---
+
+<BaseLayout title={title} description={description} isIndexed={isIndexed}>
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- 密码验证界面 -->
+    <div id="login-form" class="max-w-md mx-auto">
+      <div class="card bg-base-200 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-2xl mb-4">🔒 管理员登录</h2>
+          <p class="text-sm opacity-70 mb-4">请输入密码和 Artalk 管理员账号</p>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">页面密码</span>
+            </label>
+            <input
+              type="password"
+              id="password-input"
+              placeholder="请输入页面密码"
+              class="input input-bordered w-full"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-control mt-4">
+            <label class="label">
+              <span class="label-text">Artalk 用户名</span>
+            </label>
+            <input
+              type="text"
+              id="artalk-name-input"
+              placeholder="Artalk 管理员用户名"
+              class="input input-bordered w-full"
+              autocomplete="username"
+            />
+          </div>
+
+          <div class="form-control mt-4">
+            <label class="label">
+              <span class="label-text">Artalk 邮箱</span>
+            </label>
+            <input
+              type="email"
+              id="artalk-email-input"
+              placeholder="Artalk 管理员邮箱"
+              class="input input-bordered w-full"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="form-control mt-4">
+            <label class="label">
+              <span class="label-text">Artalk 密码</span>
+            </label>
+            <input
+              type="password"
+              id="artalk-password-input"
+              placeholder="Artalk 管理员密码"
+              class="input input-bordered w-full"
+              autocomplete="current-password"
+            />
+          </div>
+
+          <div id="error-message" class="text-error text-sm mt-2 hidden"></div>
+
+          <div class="card-actions justify-end mt-4">
+            <button id="login-btn" class="btn btn-primary">
+              登录
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 统计数据界面 -->
+    <div id="stats-content" class="hidden">
+      <!-- 顶部统计卡片 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- 总浏览量 -->
+        <div class="stats shadow bg-base-200">
+          <div class="stat">
+            <div class="stat-figure text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </div>
+            <div class="stat-title">总浏览量</div>
+            <div class="stat-value text-primary" id="total-pv">-</div>
+            <div class="stat-desc">全站累计访问</div>
+          </div>
+        </div>
+
+        <!-- 文章数量 -->
+        <div class="stats shadow bg-base-200">
+          <div class="stat">
+            <div class="stat-figure text-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div class="stat-title">文章数量</div>
+            <div class="stat-value text-secondary" id="total-posts">-</div>
+            <div class="stat-desc">已发布文章</div>
+          </div>
+        </div>
+
+        <!-- 评论数量 -->
+        <div class="stats shadow bg-base-200">
+          <div class="stat">
+            <div class="stat-figure text-accent">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            </div>
+            <div class="stat-title">评论数量</div>
+            <div class="stat-value text-accent" id="total-comments">-</div>
+            <div class="stat-desc">用户互动</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 文章排行榜 -->
+      <div class="card bg-base-200 shadow-xl">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="card-title text-2xl">📊 文章浏览排行榜</h2>
+            <button id="refresh-btn" class="btn btn-sm btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+              刷新
+            </button>
+          </div>
+
+          <div id="loading" class="flex justify-center py-8">
+            <span class="loading loading-spinner loading-lg"></span>
+          </div>
+
+          <div id="stats-table" class="hidden overflow-x-auto">
+            <table class="table table-zebra w-full">
+              <thead>
+                <tr>
+                  <th class="w-16">排名</th>
+                  <th>文章标题</th>
+                  <th class="w-24 text-right">浏览量</th>
+                  <th class="w-24 text-right">评论</th>
+                </tr>
+              </thead>
+              <tbody id="stats-tbody">
+                <!-- 数据将通过 JavaScript 动态插入 -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="error-container" class="hidden">
+            <div class="alert alert-error">
+              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span id="error-text">加载数据失败</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 退出登录按钮 -->
+      <div class="mt-6 text-center">
+        <button id="logout-btn" class="btn btn-ghost btn-sm">
+          退出登录
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ PASSWORD_HASH, ARTALK_SERVER, SITE_NAME }}>
+    // 密码验证相关
+    const AUTH_KEY = 'blog_admin_auth';
+    const ARTALK_TOKEN_KEY = 'blog_artalk_token';
+    const AUTH_EXPIRY = 24 * 60 * 60 * 1000; // 24 小时
+
+    // SHA-256 哈希函数
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // 检查是否已登录
+    function checkAuth() {
+      const authData = localStorage.getItem(AUTH_KEY);
+      const tokenData = localStorage.getItem(ARTALK_TOKEN_KEY);
+
+      if (!authData || !tokenData) return false;
+
+      try {
+        const { hash, timestamp } = JSON.parse(authData);
+        const { token, expiry } = JSON.parse(tokenData);
+        const now = Date.now();
+
+        // 检查是否过期
+        if (now - timestamp > AUTH_EXPIRY || now > expiry) {
+          localStorage.removeItem(AUTH_KEY);
+          localStorage.removeItem(ARTALK_TOKEN_KEY);
+          return false;
+        }
+
+        // 检查哈希是否匹配
+        return hash === PASSWORD_HASH && token;
+      } catch (e) {
+        localStorage.removeItem(AUTH_KEY);
+        localStorage.removeItem(ARTALK_TOKEN_KEY);
+        return false;
+      }
+    }
+
+    // 保存登录状态
+    function saveAuth(artalkToken, artalkExpiry) {
+      const authData = {
+        hash: PASSWORD_HASH,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(AUTH_KEY, JSON.stringify(authData));
+
+      const tokenData = {
+        token: artalkToken,
+        expiry: artalkExpiry
+      };
+      localStorage.setItem(ARTALK_TOKEN_KEY, JSON.stringify(tokenData));
+    }
+
+    // 清除登录状态
+    function clearAuth() {
+      localStorage.removeItem(AUTH_KEY);
+      localStorage.removeItem(ARTALK_TOKEN_KEY);
+    }
+
+    // 获取 Artalk Token
+    function getArtalkToken() {
+      try {
+        const tokenData = localStorage.getItem(ARTALK_TOKEN_KEY);
+        if (!tokenData) return null;
+        const { token } = JSON.parse(tokenData);
+        return token;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // 显示/隐藏界面
+    function showLogin() {
+      document.getElementById('login-form').classList.remove('hidden');
+      document.getElementById('stats-content').classList.add('hidden');
+    }
+
+    function showStats() {
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('stats-content').classList.remove('hidden');
+      loadStats();
+    }
+
+    // Artalk 管理员登录
+    async function loginArtalk(name, email, password) {
+      const response = await fetch(`${ARTALK_SERVER}/api/v2/auth/email/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.msg || '登录失败');
+      }
+
+      const data = await response.json();
+
+      if (!data.token) {
+        throw new Error('登录响应格式错误');
+      }
+
+      return {
+        token: data.token,
+        expiry: Date.now() + 259200 * 1000 // 3天，与 Artalk 配置的 login_timeout 一致
+      };
+    }
+
+    // 登录处理
+    async function handleLogin() {
+      const passwordInput = document.getElementById('password-input');
+      const artalkNameInput = document.getElementById('artalk-name-input');
+      const artalkEmailInput = document.getElementById('artalk-email-input');
+      const artalkPasswordInput = document.getElementById('artalk-password-input');
+      const errorMessage = document.getElementById('error-message');
+      const loginBtn = document.getElementById('login-btn');
+
+      const password = passwordInput.value.trim();
+      const artalkName = artalkNameInput.value.trim();
+      const artalkEmail = artalkEmailInput.value.trim();
+      const artalkPassword = artalkPasswordInput.value.trim();
+
+      if (!password) {
+        errorMessage.textContent = '请输入页面密码';
+        errorMessage.classList.remove('hidden');
+        return;
+      }
+
+      if (!artalkName || !artalkEmail || !artalkPassword) {
+        errorMessage.textContent = '请填写完整的 Artalk 管理员信息';
+        errorMessage.classList.remove('hidden');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> 验证中...';
+
+      try {
+        // 1. 验证页面密码
+        const hash = await sha256(password);
+        if (hash !== PASSWORD_HASH) {
+          throw new Error('页面密码错误');
+        }
+
+        // 2. 登录 Artalk
+        const { token, expiry } = await loginArtalk(artalkName, artalkEmail, artalkPassword);
+
+        // 3. 保存认证信息
+        saveAuth(token, expiry);
+        errorMessage.classList.add('hidden');
+
+        // 清空密码输入框
+        passwordInput.value = '';
+        artalkPasswordInput.value = '';
+
+        showStats();
+      } catch (e) {
+        errorMessage.textContent = `登录失败: ${e.message}`;
+        errorMessage.classList.remove('hidden');
+        console.error('登录错误:', e);
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '登录';
+      }
+    }
+
+    // 加载统计数据
+    async function loadStats() {
+      const loading = document.getElementById('loading');
+      const statsTable = document.getElementById('stats-table');
+      const errorContainer = document.getElementById('error-container');
+
+      loading.classList.remove('hidden');
+      statsTable.classList.add('hidden');
+      errorContainer.classList.add('hidden');
+
+      try {
+        const token = getArtalkToken();
+        if (!token) {
+          throw new Error('未找到认证令牌，请重新登录');
+        }
+
+        // 获取页面列表
+        const response = await fetch(`${ARTALK_SERVER}/api/v2/pages?site_name=${encodeURIComponent(SITE_NAME)}&limit=1000`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            clearAuth();
+            showLogin();
+            throw new Error('认证已过期，请重新登录');
+          }
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.data || !data.data.pages) {
+          throw new Error('数据格式错误');
+        }
+
+        const pages = data.data.pages;
+
+        // 计算总计
+        let totalPV = 0;
+        let totalComments = 0;
+
+        pages.forEach(page => {
+          totalPV += page.pv || 0;
+          totalComments += page.comment_count || 0;
+        });
+
+        // 更新顶部统计卡片
+        document.getElementById('total-pv').textContent = totalPV.toLocaleString();
+        document.getElementById('total-posts').textContent = pages.length.toLocaleString();
+        document.getElementById('total-comments').textContent = totalComments.toLocaleString();
+
+        // 按浏览量排序
+        pages.sort((a, b) => (b.pv || 0) - (a.pv || 0));
+
+        // 生成表格
+        const tbody = document.getElementById('stats-tbody');
+        tbody.innerHTML = '';
+
+        pages.slice(0, 20).forEach((page, index) => {
+          const row = document.createElement('tr');
+
+          // 排名
+          const rankCell = document.createElement('td');
+          rankCell.className = 'font-bold';
+          if (index === 0) {
+            rankCell.innerHTML = '🥇';
+          } else if (index === 1) {
+            rankCell.innerHTML = '🥈';
+          } else if (index === 2) {
+            rankCell.innerHTML = '🥉';
+          } else {
+            rankCell.textContent = index + 1;
+          }
+          row.appendChild(rankCell);
+
+          // 标题（带链接）
+          const titleCell = document.createElement('td');
+          const link = document.createElement('a');
+          link.href = page.key;
+          link.textContent = page.title || page.key;
+          link.className = 'link link-hover';
+          link.target = '_blank';
+          titleCell.appendChild(link);
+          row.appendChild(titleCell);
+
+          // 浏览量
+          const pvCell = document.createElement('td');
+          pvCell.className = 'text-right font-semibold';
+          pvCell.textContent = (page.pv || 0).toLocaleString();
+          row.appendChild(pvCell);
+
+          // 评论数
+          const commentCell = document.createElement('td');
+          commentCell.className = 'text-right';
+          commentCell.textContent = (page.comment_count || 0).toLocaleString();
+          row.appendChild(commentCell);
+
+          tbody.appendChild(row);
+        });
+
+        loading.classList.add('hidden');
+        statsTable.classList.remove('hidden');
+
+      } catch (error) {
+        console.error('加载统计数据失败:', error);
+        loading.classList.add('hidden');
+        errorContainer.classList.remove('hidden');
+        document.getElementById('error-text').textContent = `加载数据失败: ${error.message}`;
+      }
+    }
+
+    // 事件监听
+    document.addEventListener('DOMContentLoaded', () => {
+      // 检查登录状态
+      if (checkAuth()) {
+        showStats();
+      } else {
+        showLogin();
+      }
+
+      // 登录按钮
+      document.getElementById('login-btn').addEventListener('click', handleLogin);
+
+      // 密码输入框回车
+      const inputs = ['password-input', 'artalk-name-input', 'artalk-email-input', 'artalk-password-input'];
+      inputs.forEach(id => {
+        document.getElementById(id).addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            handleLogin();
+          }
+        });
+      });
+
+      // 退出登录按钮
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        clearAuth();
+        showLogin();
+      });
+
+      // 刷新按钮
+      document.getElementById('refresh-btn').addEventListener('click', () => {
+        loadStats();
+      });
+    });
+  </script>
+</BaseLayout>
