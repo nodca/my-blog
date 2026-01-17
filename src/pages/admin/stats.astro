@@ -396,11 +396,11 @@ const SITE_NAME = 'nodca的博客';
 
         const data = await response.json();
 
-        if (!data.data || !data.data.pages) {
+        if (!data.pages) {
           throw new Error('数据格式错误');
         }
 
-        const pages = data.data.pages;
+        const pages = data.pages;
 
         // 计算总计
         let totalPV = 0;
