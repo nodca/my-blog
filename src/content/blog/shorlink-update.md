@@ -408,12 +408,6 @@ shortlink_cache_operations_total{level="l2",result="hit"} 1
 | 批量写入优化 | 性能提升 10-20 倍 |
 | 布隆过滤器 | 彻底防止缓存穿透 |
 
-### 简历亮点
-
-- **可观测性**：集成 Prometheus + Grafana，监控 QPS、P99 延迟、缓存命中率等核心指标
-- **批量写入优化**：使用 PostgreSQL COPY 协议 + unnest 聚合更新，单批写入耗时从 ~200ms 降至 ~10ms
-- **三层缓存防护**：L1 本地缓存 + L2 Redis + 布隆过滤器，100 万短码仅占用 ~1.2MB 内存
-
 ## 相关链接
 
 - [bits-and-blooms/bloom](https://github.com/bits-and-blooms/bloom)
