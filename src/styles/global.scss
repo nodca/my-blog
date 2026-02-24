@@ -101,6 +101,27 @@ code {
   }
 }
 
+/* Geek/Brutalist custom utilities */
+@layer utilities {
+  .brutal-shadow {
+    text-shadow: 4px 4px 0px #000000;
+  }
+  .brutal-shadow-dark {
+    text-shadow: 4px 4px 0px #f7f7f4;
+  }
+}
+
+/* Ensure dark mode has the correct shadow color */
+[data-theme-type="dark"] .group:hover .group-hover\:brutal-shadow,
+[data-theme-type="dark"] .hover\:brutal-shadow:hover {
+  text-shadow: 3px 3px 0px #f7f7f4 !important;
+}
+
+[data-theme-type="light"] .group:hover .group-hover\:brutal-shadow,
+[data-theme-type="light"] .hover\:brutal-shadow:hover {
+  text-shadow: 3px 3px 0px #000000 !important;
+}
+
 /* Clean code block style - Redux for Red theme */
 .frosti-code {
   @apply relative my-8 border-y-2 border-base-content bg-transparent overflow-hidden;

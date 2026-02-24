@@ -15,56 +15,57 @@ const recentPosts = posts
 ---
 
 <BaseLayout title="首页 - 记录生活与技术的个人博客">
-  <div class="max-w-3xl mx-auto py-12 md:py-16">
-    <!-- Hero Section: Avant-Garde Pop Art Typography -->
-    <header class="mb-24 relative">
-      <div class="absolute -left-6 top-3 w-3 h-3 bg-blood hidden sm:block"></div>
-      <h1 class="text-6xl md:text-8xl font-black tracking-tighter text-base-content mb-8 leading-[0.9] font-serif uppercase selection:bg-blood selection:text-white">
-        你好，<br/> 欢迎光临。
+  <div class="max-w-4xl mx-auto py-16 md:py-24">
+    <!-- Hero Section: Modern Tech Brutalism -->
+    <header class="mb-32">
+      <div class="w-16 h-4 bg-blood mb-8"></div>
+      <h1 class="text-6xl md:text-[7rem] font-black tracking-tighter text-base-content mb-8 leading-[1.1] font-sans selection:bg-blood selection:text-white">
+        Hello,<br/>World.
       </h1>
-      <p class="text-xl md:text-2xl text-base-content font-bold max-w-2xl leading-relaxed mb-12 selection:bg-blood selection:text-white">
-        这里是我的个人数字花园。<br/>记录技术学习、生活感悟和各种折腾的过程。
+      <p class="text-2xl md:text-3xl text-base-content/80 font-bold max-w-2xl leading-tight mb-16 selection:bg-blood selection:text-white tracking-tight">
+        记录技术探索和生活碎片。
       </p>
       
-      <div class="flex flex-wrap items-center gap-8 text-base font-black tracking-widest uppercase">
-        <a href="/blog" class="group flex items-center gap-2 text-base-content hover:text-blood transition-colors">
-          <span class="border-b-4 border-base-content group-hover:border-blood pb-0.5 transition-colors">浏览文章</span>
-          <Icon name="lucide:arrow-up-right" class="w-6 h-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+      <div class="flex flex-wrap items-center gap-6 text-xl font-black tracking-tighter">
+        <a href="/blog" class="group flex items-center gap-2 text-base-content hover:text-blood transition-colors bg-base-content/5 px-6 py-3 rounded-full hover:bg-blood/10">
+          <span>阅读文章</span>
+          <Icon name="lucide:arrow-right" class="w-6 h-6 transition-transform group-hover:translate-x-1" />
         </a>
-        <a href="/about" class="group flex items-center gap-2 text-base-content hover:text-blood transition-colors">
-          <span class="border-b-4 border-base-content/20 group-hover:border-blood pb-0.5 transition-colors">关于我</span>
+        <a href="/about" class="group flex items-center gap-2 text-base-content/50 hover:text-blood transition-colors px-4 py-3">
+          <span>关于我</span>
         </a>
       </div>
     </header>
 
-    <!-- Recent Posts: High Contrast Blueprint List -->
+    <!-- Recent Posts: Modern Blocky List -->
     <section>
-      <div class="flex items-end justify-between mb-8 border-b-4 border-base-content pb-4">
-        <h2 class="text-2xl md:text-3xl font-black tracking-tighter uppercase text-base-content selection:bg-blood selection:text-white">
-          最新文章 / LATEST
+      <div class="flex items-center gap-4 mb-12">
+        <h2 class="text-3xl font-black tracking-tighter text-base-content selection:bg-blood selection:text-white">
+          最新发布
         </h2>
-        <a href="/blog" class="text-xs font-black tracking-widest uppercase text-base-content hover:bg-blood hover:text-white px-2 py-1 transition-colors mb-1">
-          全部文章 &rarr;
+        <div class="flex-1 h-1 bg-base-content/10"></div>
+        <a href="/blog" class="text-sm font-black tracking-widest uppercase text-base-content/50 hover:text-blood transition-colors">
+          查看全部
         </a>
       </div>
 
-      <div class="flex flex-col border-b-4 border-base-content">
+      <div class="grid grid-cols-1 gap-6">
         {recentPosts.map((post: CollectionEntry<"blog">) => (
-          <article class="group py-8 border-t-2 border-base-content/30 transition-all duration-200">
-            <a href={`/blog/${post.slug}`} class="block px-4 sm:px-0">
-              <div class="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
+          <article class="group bg-base-content/[0.02] hover:bg-base-content/[0.05] border-l-4 border-transparent hover:border-blood transition-all duration-300 p-6 md:p-8 rounded-r-2xl">
+            <a href={`/blog/${post.slug}`} class="block">
+              <div class="flex flex-col gap-3">
                 <!-- Date column -->
-                <time class="text-sm font-black tracking-widest font-mono text-base-content/50 group-hover:text-blood shrink-0 sm:w-32 pt-1 uppercase transition-colors">
-                  {dayjs(post.data.pubDate).format("YY.MM.DD")}
+                <time class="text-xs font-bold tracking-widest font-mono text-blood uppercase">
+                  {dayjs(post.data.pubDate).format("YYYY-MM-DD")}
                 </time>
                 
                 <!-- Content column -->
-                <div class="flex-1">
-                  <h3 class="text-2xl md:text-4xl font-black text-base-content group-hover:text-blood transition-colors mb-3 leading-[1.1] tracking-tight font-serif">
+                <div>
+                  <h3 class="text-3xl md:text-4xl font-black text-base-content mb-3 leading-none tracking-tighter font-sans">
                     {post.data.title}
                   </h3>
                   {post.data.description && (
-                    <p class="text-base-content/80 leading-relaxed text-lg font-medium transition-colors">
+                    <p class="text-base-content/60 leading-relaxed text-lg font-medium">
                       {post.data.description}
                     </p>
                   )}
