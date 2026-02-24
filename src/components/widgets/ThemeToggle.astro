@@ -11,7 +11,10 @@ const { className = "" } = Astro.props as ThemeToggleProps;
 
 <button
   id={uniqueId}
-  class:list={["btn btn-circle btn-md bg-base-100 shadow-sm hover:scale-110 md:border-base-content/20", className]}
+  class:list={[
+    "flex items-center justify-center p-2 text-base-content hover:text-blood transition-colors rounded-none outline-none focus:outline-none",
+    className
+  ]}
   aria-label="Toggle theme"
   data-theme-toggle
   title={t("label.themeToggle")}

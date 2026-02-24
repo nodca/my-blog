@@ -1,17 +1,22 @@
 ---
-import MainCard from "@/components/MainCard.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="关于我">
-  <MainCard
-    title="关于我"
-    description="这个页面正在建设中..."
-    textOverlay="ABOUT"
-    infoIcon="lucide:user"
-  >
-    <div class="py-12 text-center">
-      <p class="text-base-content/60 text-lg">内容待补充</p>
+<BaseLayout title="About">
+  <article class="max-w-3xl mx-auto py-16 md:py-24 antialiased">
+    
+    <header class="mb-16 md:mb-24 text-center">
+      <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight text-base-content mb-8 font-serif leading-[1.1]">
+        About Me
+      </h1>
+      <div class="w-16 h-px bg-base-content/20 mx-auto"></div>
+    </header>
+
+    <div class="prose prose-lg md:prose-xl mx-auto text-center prose-p:text-base-content/70 prose-p:leading-relaxed font-serif italic">
+      <p>
+        "I am still working on this page. More words and stories will fill this space soon."
+      </p>
     </div>
-  </MainCard>
+
+  </article>
 </BaseLayout>

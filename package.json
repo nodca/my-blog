@@ -25,6 +25,8 @@
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/tailwind": "^6.0.2",
     "@expressive-code/plugin-line-numbers": "^0.41.3",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/playfair-display": "^5.2.8",
     "@notionhq/client": "^2.3.0",
     "@playform/compress": "^0.1.9",
     "@rollup/plugin-terser": "^0.4.4",

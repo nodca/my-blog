@@ -1,33 +1,48 @@
 ---
 import { t } from "@config";
 import type { PaginationProps } from "@interfaces/data";
-import PaginationArrow from "./PaginationArrow.astro";
-import PaginationDropdown from "./PaginationDropdown.astro";
-import PaginationNumber from "./PaginationNumber.astro";
 
-const { page, totalPages, pageLinks, baseUrl } = Astro.props as PaginationProps;
+const { page, totalPages, baseUrl } = Astro.props as PaginationProps;
+
+// Simple pagination logic for editorial style
+const prevUrl = page.url.prev;
+const nextUrl = page.url.next;
 ---
 
-<div class="flex justify-between items-center w-full gap-2 order-4" transition:name="pagination">
-  <PaginationArrow direction="prev" url={page.url.prev} label={t("label.prevPage")} />
-  <div class="join">
-    {
-      totalPages > 3 ? (
-        <>
-          {pageLinks.active.map((link: string | number) =>
-            link === "..." ? (
-              <PaginationDropdown hiddenPages={pageLinks.hidden} current={page.current} baseUrl={baseUrl} />
-            ) : (
-              <PaginationNumber number={link} current={page.current} baseUrl={baseUrl} />
-            ),
-          )}
-        </>
-      ) : (
-        pageLinks.active.map((link: string | number) => (
-          <PaginationNumber number={link} current={page.current} baseUrl={baseUrl} isOnly={totalPages === 1} />
-        ))
-      )
-    }
+<nav class="flex items-center justify-between w-full text-sm font-medium py-4" aria-label="Pagination">
+  <div class="flex-1 text-left">
+    {prevUrl ? (
+      <a 
+        href={prevUrl} 
+        class="inline-flex items-center gap-2 text-base-content/60 hover:text-base-content transition-colors group"
+      >
+        <span class="group-hover:-translate-x-1 transition-transform">&larr;</span> 
+        {t("label.prevPage") || "Newer"}
+      </a>
+    ) : (
+      <span class="inline-flex items-center gap-2 text-base-content/20 cursor-not-allowed">
+        &larr; {t("label.prevPage") || "Newer"}
+      </span>
+    )}
   </div>
-  <PaginationArrow direction="next" url={page.url.next} label={t("label.nextPage")} />
-</div>
+
+  <div class="flex-1 text-center font-mono text-base-content/40 tracking-widest text-xs">
+    {page.current} / {totalPages}
+  </div>
+
+  <div class="flex-1 text-right">
+    {nextUrl ? (
+      <a 
+        href={nextUrl} 
+        class="inline-flex items-center justify-end gap-2 text-base-content/60 hover:text-base-content transition-colors group"
+      >
+        {t("label.nextPage") || "Older"}
+        <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+      </a>
+    ) : (
+      <span class="inline-flex items-center justify-end gap-2 text-base-content/20 cursor-not-allowed">
+        {t("label.nextPage") || "Older"} &rarr;
+      </span>
+    )}
+  </div>
+</nav>
