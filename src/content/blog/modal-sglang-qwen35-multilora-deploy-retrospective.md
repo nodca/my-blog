@@ -199,6 +199,29 @@ Ghost Text 续写任务的核心不是“模型会不会写”，而是“输出
 
 ---
 
+## 一分钟自检命令清单
+
+```bash
+# 1) 部署
+python -m modal deploy modal_sglang.py
+
+# 2) 查看应用与状态
+python -m modal app list --json
+
+# 3) 查看日志（替换 app-id）
+python -m modal app logs <app-id>
+
+# 4) 运行一次内部探针（快速验证推理核心）
+python -m modal run modal_sglang.py::probe_inside --prompt "Reply with exactly: OK"
+
+# 5) 停止应用（排障阶段建议每轮都执行）
+python -m modal app stop noir-sglang-multilora
+```
+
+建议排障时固定执行顺序：`deploy → probe → logs → stop`，避免 GPU 长时间空转。
+
+---
+
 ## 参考链接
 
 - https://modal.com/docs/examples/vllm_inference
