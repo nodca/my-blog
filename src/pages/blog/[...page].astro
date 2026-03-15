@@ -1,11 +1,11 @@
 ---
 import Pagination from "@components/widgets/Pagination.astro";
-import { t, DATE_FORMAT } from "@config";
+import { t } from "@config";
 import type { Page, Post } from "@interfaces/data";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { generatePageLinks } from "@utils/blogUtils";
-import { getMainBlogPaginationPaths } from "@utils/paginationUtils";
 import dayjs from "@utils/dayjs";
+import { getMainBlogPaginationPaths } from "@utils/paginationUtils";
 
 export async function getStaticPaths({ paginate }: { paginate: any }) {
   return getMainBlogPaginationPaths({ paginate });

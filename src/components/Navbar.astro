@@ -27,10 +27,10 @@ type MenuItem = {
 const typedMenu = SITE_MENU as MenuItem[];
 
 // For the minimalist top nav, we flatten the menu and only take top level
-const navItems = typedMenu.map(item => ({
+const navItems = typedMenu.map((item) => ({
   text: item.text,
   href: item.href,
-  target: item.target
+  target: item.target,
 }));
 ---
 

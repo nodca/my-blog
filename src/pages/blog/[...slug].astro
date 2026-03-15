@@ -1,11 +1,10 @@
 ---
+import { Image } from "astro:assets";
 import { type CollectionEntry, getCollection } from "astro:content";
 import Comment from "@components/widgets/Comment.astro";
 import License from "@components/widgets/License.astro";
-import { DATE_FORMAT } from "@config";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import dayjs from "@utils/dayjs";
-import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
