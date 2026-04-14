@@ -25,3 +25,7 @@ pnpm-debug.log*
 
 # pagefind
 public/pagefind/
+
+.codex
+src/content/blog/.codex
+src/content/blog/register-openai-quota.png
