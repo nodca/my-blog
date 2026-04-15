@@ -22,14 +22,12 @@ const { Content, remarkPluginFrontmatter } = await blog.render();
 const displayDate = blog.data.pubDate
   ? dayjs(blog.data.pubDate).format("YYYY.MM.DD")
   : "";
-const image = new URL(`/og/${blog.slug}.png`, Astro.site).toString();
 const url = new URL(`/blog/${blog.slug}`, Astro.url.origin);
 ---
 
 <BaseLayout
   title={blog.data.title}
   description={blog.data.description}
-  image={image}
 >
   <article class="max-w-3xl mx-auto py-12 md:py-20 antialiased w-full">
     

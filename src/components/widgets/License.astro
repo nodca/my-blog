@@ -16,7 +16,6 @@ const {
   time,
 } = Astro.props as PostData;
 const displayDate = pubDate ? dayjs(pubDate).format(DATE_FORMAT) : "";
-const ogImage = url ? `${String(url).replace("/blog/", "/og/")}.png` : "";
 const socialLinks = [
   {
     name: "X (Twitter)",
@@ -141,16 +140,6 @@ const socialLinks = [
         {t("label.shareCard")}
       </h3>
 
-      <div class="w-full mb-4 flex justify-center">
-        <img
-          src={ogImage}
-          alt={`Share preview for ${title}`}
-          class="rounded-lg shadow-md max-h-60 object-contain"
-          loading="lazy"
-        />
-      </div>
-
-      <!-- 按钮更小巧，排列紧凑 -->
       <div class="flex flex-wrap gap-3 justify-center">
         {
           socialLinks.map(({ name, icon, class: bgClass, url }) => (
