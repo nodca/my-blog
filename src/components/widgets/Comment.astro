@@ -1,140 +1,348 @@
 ---
-// Artalk 评论组件
+const { pageTitle = "" } = Astro.props;
 ---
 
-<div id="artalk" class="mt-8 pt-8 border-t border-base-300"></div>
+<section
+  data-comment-widget
+  data-page-title={pageTitle}
+  class="mt-8 rounded-[2rem] border border-base-content/10 bg-base-200/60 p-6 md:p-8"
+>
+  <div class="flex flex-col gap-2 border-b border-base-content/10 pb-5 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h2 class="text-2xl font-serif font-bold text-base-content">评论</h2>
+      <p class="text-sm text-base-content/60">
+        轻量同源评论，提交后默认进入审核。
+      </p>
+    </div>
+    <div
+      data-comment-count
+      class="text-sm font-mono uppercase tracking-[0.2em] text-base-content/50"
+    >
+      加载中
+    </div>
+  </div>
 
-<style is:global>
-  /* 邮箱提示样式 */
-  .email-hint {
-    font-size: 12px;
-    color: #888;
-    margin-left: 4px;
-  }
-</style>
+  <div class="mt-6">
+    <form data-comment-form class="space-y-4">
+      <input type="hidden" name="parentId" value="" />
+
+      <div
+        data-reply-target
+        class="hidden rounded-2xl border border-base-content/10 bg-base-100 px-4 py-3 text-sm text-base-content/70"
+      >
+        <div class="flex items-center justify-between gap-3">
+          <span data-reply-label></span>
+          <button type="button" data-reply-cancel class="btn btn-ghost btn-xs">
+            取消回复
+          </button>
+        </div>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <label class="form-control">
+          <span class="mb-2 text-sm font-medium text-base-content/70">昵称</span>
+          <input
+            type="text"
+            name="author"
+            maxlength="32"
+            required
+            class="input input-bordered w-full"
+            placeholder="怎么称呼你"
+          />
+        </label>
+
+        <label class="form-control">
+          <span class="mb-2 text-sm font-medium text-base-content/70">
+            邮箱
+          </span>
+          <input
+            type="email"
+            name="email"
+            maxlength="120"
+            class="input input-bordered w-full"
+            placeholder="用于必要联系，不会公开"
+          />
+        </label>
+      </div>
+
+      <label class="form-control">
+        <span class="mb-2 text-sm font-medium text-base-content/70">内容</span>
+        <textarea
+          name="content"
+          required
+          maxlength="2000"
+          rows="5"
+          class="textarea textarea-bordered min-h-36 w-full"
+          placeholder="写点有价值的内容。支持纯文本。"
+        ></textarea>
+      </label>
+
+      <input
+        type="text"
+        name="website"
+        tabindex="-1"
+        autocomplete="off"
+        class="hidden"
+      />
+
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div data-comment-feedback class="min-h-6 text-sm text-base-content/60"></div>
+        <button type="submit" class="btn btn-primary">
+          提交评论
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="mt-8 space-y-4" data-comment-list></div>
+</section>
 
 <script is:inline>
-  function loadArtalk() {
-    var container = document.querySelector('#artalk');
-    if (!container || container.dataset.loaded) return;
+  function getCommentApiBase() {
+    var host = window.location.hostname;
+    var protocol = window.location.protocol;
 
-    // 标记已开始加载，防止重复执行
-    container.dataset.loaded = 'true';
-
-    // 定义资源 URL (使用国内镜像)
-    var cssUrl = 'https://registry.npmmirror.com/artalk/2.9.1/files/dist/Artalk.css';
-    var jsUrl = 'https://registry.npmmirror.com/artalk/2.9.1/files/dist/Artalk.js';
-
-    // 动态加载 CSS
-    var link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = cssUrl;
-    document.head.appendChild(link);
-
-    // 动态加载 JS
-    var script = document.createElement('script');
-    script.src = jsUrl;
-    script.onload = initArtalkInstance;
-    document.body.appendChild(script);
-  }
-
-  function initArtalkInstance() {
-    var container = document.querySelector('#artalk');
-    if (!container) return;
-    container.innerHTML = '';
-
-    var artalk = Artalk.init({
-      el: '#artalk',
-      server: 'https://comment.cyb1.org',
-      site: 'nodca的博客',
-      pageKey: window.location.pathname,
-      darkMode: document.documentElement.getAttribute('data-theme') === 'dracula',
-      placeholder: '欢迎留言~',
-      useBackendConf: false,
-      gravatar: {
-        mirror: 'https://cravatar.cn/avatar/',
-        params: 'd=monsterid'
-      }
-    });
-
-    // 增强版：在邮箱标签旁添加提示
-    function addEmailHint() {
-      var hintText = '(不会公开)';
-      var container = document.querySelector('#artalk');
-      if (!container) return;
-
-      // 1. 找输入框，修改 Placeholder
-      var inputs = container.querySelectorAll('input[name="email"], input[type="email"]');
-      inputs.forEach(function(input) {
-        if (input.placeholder && input.placeholder.indexOf(hintText) === -1) {
-            input.placeholder = input.placeholder + ' ' + hintText;
-        }
-      });
-
-      // 2. 找 Label，添加可见文字
-      var elements = container.getElementsByTagName('*');
-      for (var i = 0; i < elements.length; i++) {
-        var el = elements[i];
-        if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.classList.contains('email-hint')) continue;
-        
-        if (el.children.length === 0 && el.textContent) {
-           var text = el.textContent.trim().toLowerCase();
-           if (text === '邮箱' || text === 'email') {
-             if (el.nextElementSibling && el.nextElementSibling.classList.contains('email-hint')) continue;
-             if (el.parentElement.classList.contains('email-hint')) continue;
-
-             var hint = document.createElement('span');
-             hint.className = 'email-hint';
-             hint.textContent = hintText;
-             // 样式微调：灰色，小字体
-             hint.style.color = '#999'; 
-             hint.style.fontSize = '12px';
-             hint.style.marginLeft = '6px';
-             
-             el.insertAdjacentElement('afterend', hint);
-           }
-        }
-      }
+    if (host === "localhost" || host === "127.0.0.1") {
+      return protocol + "//" + host + ":4322/api/comments";
     }
 
-    // 轮询检查：每 500ms 执行一次，持续 5 秒
-    var checkCount = 0;
-    var interval = setInterval(function() {
-      addEmailHint();
-      checkCount++;
-      if (checkCount > 10) clearInterval(interval);
-    }, 500);
-
-    var observer = new MutationObserver(function(mutations) {
-      addEmailHint();
-    });
-    observer.observe(container, { childList: true, subtree: true });
+    return window.location.origin + "/api/comments";
   }
 
-  function setupLazyLoad() {
-    var container = document.querySelector('#artalk');
-    if (!container) return;
+  function normalizeSlug(pathname) {
+    var value = String(pathname || "").split("?")[0].split("#")[0].trim();
+    if (!value) return "/";
+    if (!value.startsWith("/")) value = "/" + value;
+    value = value.replace(/\/{2,}/g, "/");
+    if (value.length > 1 && !value.endsWith("/")) value += "/";
+    return value;
+  }
 
-    // 重置加载状态 (用于 Astro 页面切换)
-    delete container.dataset.loaded;
+  function createTextElement(tagName, className, text) {
+    var element = document.createElement(tagName);
+    if (className) element.className = className;
+    element.textContent = text;
+    return element;
+  }
 
-    // 策略优化：不再等待滚动，而是延迟加载 (Idle Load)
-    // 这样既不阻塞首屏，又能保证用户滚下来时通常已经加载好了
-    var loadDelay = 2000; // 2秒后加载
-    
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(function() {
-        setTimeout(loadArtalk, loadDelay);
+  function formatDate(value) {
+    try {
+      return new Date(value).toLocaleString("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
       });
-    } else {
-      setTimeout(loadArtalk, loadDelay + 1000);
+    } catch {
+      return value;
     }
   }
 
-  // 初始加载
-  document.addEventListener('DOMContentLoaded', setupLazyLoad);
+  function buildTree(comments) {
+    var nodeMap = new Map();
+    var roots = [];
 
-  // Astro 页面切换后重新初始化
-  document.addEventListener('astro:page-load', setupLazyLoad);
-  document.addEventListener('astro:after-swap', setupLazyLoad);
+    comments.forEach(function(comment) {
+      nodeMap.set(comment.id, Object.assign({}, comment, { children: [] }));
+    });
+
+    nodeMap.forEach(function(comment) {
+      if (comment.parentId && nodeMap.has(comment.parentId)) {
+        nodeMap.get(comment.parentId).children.push(comment);
+      } else {
+        roots.push(comment);
+      }
+    });
+
+    return roots;
+  }
+
+  function renderCommentNode(comment, depth, state) {
+    var article = document.createElement("article");
+    article.className =
+      "rounded-[1.5rem] border border-base-content/10 bg-base-100/80 p-5";
+    article.style.marginLeft = Math.min(depth, 4) * 18 + "px";
+
+    var header = document.createElement("div");
+    header.className = "flex flex-wrap items-center gap-3";
+
+    header.appendChild(
+      createTextElement(
+        "strong",
+        "font-medium text-base-content",
+        comment.author
+      )
+    );
+    header.appendChild(
+      createTextElement(
+        "span",
+        "text-xs uppercase tracking-[0.2em] text-base-content/40",
+        formatDate(comment.createdAt)
+      )
+    );
+
+    article.appendChild(header);
+    article.appendChild(
+      createTextElement(
+        "p",
+        "mt-3 whitespace-pre-wrap break-words leading-7 text-base-content/80",
+        comment.content
+      )
+    );
+
+    var actions = document.createElement("div");
+    actions.className = "mt-4";
+
+    var replyButton = document.createElement("button");
+    replyButton.type = "button";
+    replyButton.className = "btn btn-ghost btn-xs";
+    replyButton.textContent = "回复";
+    replyButton.addEventListener("click", function() {
+      state.form.elements.parentId.value = String(comment.id);
+      state.replyTarget.classList.remove("hidden");
+      state.replyLabel.textContent = "正在回复 @" + comment.author;
+      state.form.elements.content.focus();
+      state.root.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    actions.appendChild(replyButton);
+    article.appendChild(actions);
+
+    if (comment.children && comment.children.length) {
+      var children = document.createElement("div");
+      children.className = "mt-4 space-y-4";
+      comment.children.forEach(function(child) {
+        children.appendChild(renderCommentNode(child, depth + 1, state));
+      });
+      article.appendChild(children);
+    }
+
+    return article;
+  }
+
+  function renderComments(state, comments, total) {
+    state.count.textContent = total + " 条评论";
+    state.list.innerHTML = "";
+
+    if (!comments.length) {
+      state.list.appendChild(
+        createTextElement(
+          "div",
+          "rounded-2xl border border-dashed border-base-content/15 px-5 py-8 text-center text-sm text-base-content/50",
+          "还没有公开评论。"
+        )
+      );
+      return;
+    }
+
+    buildTree(comments).forEach(function(comment) {
+      state.list.appendChild(renderCommentNode(comment, 0, state));
+    });
+  }
+
+  async function loadComments(state) {
+    state.feedback.textContent = "正在加载评论...";
+
+    try {
+      var response = await fetch(
+        state.apiBase + "?slug=" + encodeURIComponent(state.slug)
+      );
+
+      if (!response.ok) {
+        throw new Error("load_failed");
+      }
+
+      var data = await response.json();
+      renderComments(state, data.comments || [], data.total || 0);
+      state.feedback.textContent = "";
+    } catch (error) {
+      state.feedback.textContent = "评论加载失败";
+      state.list.innerHTML = "";
+    }
+  }
+
+  function resetReply(state) {
+    state.form.elements.parentId.value = "";
+    state.replyTarget.classList.add("hidden");
+    state.replyLabel.textContent = "";
+  }
+
+  async function handleSubmit(event, state) {
+    event.preventDefault();
+    state.feedback.textContent = "正在提交...";
+
+    var payload = {
+      slug: state.slug,
+      pageTitle: state.pageTitle,
+      author: state.form.elements.author.value,
+      email: state.form.elements.email.value,
+      content: state.form.elements.content.value,
+      parentId: state.form.elements.parentId.value || null,
+      website: state.form.elements.website.value,
+    };
+
+    try {
+      var response = await fetch(state.apiBase, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      var data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "submit_failed");
+      }
+
+      state.form.reset();
+      resetReply(state);
+      state.feedback.textContent = data.message || "评论已提交";
+
+      if (data.status === "approved") {
+        await loadComments(state);
+      }
+    } catch (error) {
+      state.feedback.textContent =
+        error && error.message ? error.message : "提交失败";
+    }
+  }
+
+  function initCommentWidget(root) {
+    if (root.dataset.bound === "true") return;
+    root.dataset.bound = "true";
+
+    var state = {
+      root: root,
+      apiBase: getCommentApiBase(),
+      slug: normalizeSlug(window.location.pathname),
+      pageTitle: root.dataset.pageTitle || "",
+      form: root.querySelector("[data-comment-form]"),
+      list: root.querySelector("[data-comment-list]"),
+      count: root.querySelector("[data-comment-count]"),
+      feedback: root.querySelector("[data-comment-feedback]"),
+      replyTarget: root.querySelector("[data-reply-target]"),
+      replyLabel: root.querySelector("[data-reply-label]"),
+    };
+
+    root
+      .querySelector("[data-reply-cancel]")
+      .addEventListener("click", function() {
+        resetReply(state);
+      });
+
+    state.form.addEventListener("submit", function(event) {
+      handleSubmit(event, state);
+    });
+
+    loadComments(state);
+  }
+
+  function initCommentWidgets() {
+    document.querySelectorAll("[data-comment-widget]").forEach(initCommentWidget);
+  }
+
+  document.addEventListener("DOMContentLoaded", initCommentWidgets);
+  document.addEventListener("astro:page-load", initCommentWidgets);
 </script>

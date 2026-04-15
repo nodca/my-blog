@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "comments:dev": "node --watch server/comment-api.mjs",
+    "comments:start": "node server/comment-api.mjs",
+    "comments:migrate:artalk": "node server/migrate-artalk.mjs",
     "check": "astro check",
     "build": "astro check && astro build && pagefind --site dist",
     "search:clean": "rimraf public/pagefind",
@@ -45,6 +48,7 @@
     "mdast-util-to-string": "^4.0.0",
     "medium-zoom": "^1.1.0",
     "octokit": "^4.1.4",
+    "pg": "^8.20.0",
     "rehype-external-links": "^3.0.0",
     "rehype-katex": "^7.0.1",
     "remark": "^15.0.1",

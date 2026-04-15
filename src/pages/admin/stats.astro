@@ -1,531 +1,464 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const isIndexed = false; // 防止搜索引擎索引
-const title = "访客统计";
-const description = "博客访客统计数据";
-
-// 密码哈希（SHA-256）
-const PASSWORD_HASH =
-  "cde2a9fbf3563f2ce5c1f9793e8823d3a417f38108df6755305a4220e978fd9e";
-
-// Artalk API 配置
-const ARTALK_SERVER = "https://comment.cyb1.org";
-const SITE_NAME = "nodca的博客";
+const isIndexed = false;
+const title = "评论管理";
+const description = "博客评论审核与管理";
 ---
 
 <BaseLayout title={title} description={description} isIndexed={isIndexed}>
-  <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <!-- 密码验证界面 -->
-    <div id="login-form" class="max-w-md mx-auto">
-      <div class="card bg-base-200 shadow-xl">
+  <div class="mx-auto w-full max-w-6xl space-y-8 px-4 py-8">
+    <section id="login-panel" class="mx-auto max-w-md">
+      <div class="card border border-base-content/10 bg-base-200 shadow-xl">
         <div class="card-body">
-          <h2 class="card-title text-2xl mb-4">🔒 管理员登录</h2>
-          <p class="text-sm opacity-70 mb-4">请输入密码和 Artalk 管理员账号</p>
+          <h1 class="card-title text-2xl">评论管理</h1>
+          <p class="text-sm text-base-content/60">
+            输入评论管理令牌后，可审核、标记垃圾评论和删除评论。
+          </p>
 
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">页面密码</span>
-            </label>
+          <label class="form-control mt-4">
+            <span class="mb-2 text-sm font-medium text-base-content/70">
+              管理令牌
+            </span>
             <input
+              id="admin-token"
               type="password"
-              id="password-input"
-              placeholder="请输入页面密码"
-              class="input input-bordered w-full"
-              autocomplete="off"
-            />
-          </div>
-
-          <div class="form-control mt-4">
-            <label class="label">
-              <span class="label-text">Artalk 用户名</span>
-            </label>
-            <input
-              type="text"
-              id="artalk-name-input"
-              placeholder="Artalk 管理员用户名"
-              class="input input-bordered w-full"
-              autocomplete="username"
-            />
-          </div>
-
-          <div class="form-control mt-4">
-            <label class="label">
-              <span class="label-text">Artalk 邮箱</span>
-            </label>
-            <input
-              type="email"
-              id="artalk-email-input"
-              placeholder="Artalk 管理员邮箱"
-              class="input input-bordered w-full"
-              autocomplete="email"
-            />
-          </div>
-
-          <div class="form-control mt-4">
-            <label class="label">
-              <span class="label-text">Artalk 密码</span>
-            </label>
-            <input
-              type="password"
-              id="artalk-password-input"
-              placeholder="Artalk 管理员密码"
-              class="input input-bordered w-full"
               autocomplete="current-password"
+              class="input input-bordered w-full"
+              placeholder="COMMENT_ADMIN_TOKEN"
             />
-          </div>
+          </label>
 
-          <div id="error-message" class="text-error text-sm mt-2 hidden"></div>
+          <div id="login-error" class="mt-3 min-h-5 text-sm text-error"></div>
 
-          <div class="card-actions justify-end mt-4">
-            <button id="login-btn" class="btn btn-primary">
-              登录
-            </button>
+          <div class="card-actions mt-4 justify-end">
+            <button id="login-button" class="btn btn-primary">登录</button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- 统计数据界面 -->
-    <div id="stats-content" class="hidden">
-      <!-- 顶部统计卡片 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- 总浏览量 -->
-        <div class="stats shadow bg-base-200">
-          <div class="stat">
-            <div class="stat-figure text-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-              </svg>
-            </div>
-            <div class="stat-title">总浏览量</div>
-            <div class="stat-value text-primary" id="total-pv">-</div>
-            <div class="stat-desc">全站累计访问</div>
-          </div>
+    <section id="admin-panel" class="hidden space-y-6">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 class="text-3xl font-serif font-bold text-base-content">评论管理</h1>
+          <p class="text-sm text-base-content/60">
+            审核、筛选并处理博客评论。
+          </p>
         </div>
 
-        <!-- 文章数量 -->
-        <div class="stats shadow bg-base-200">
-          <div class="stat">
-            <div class="stat-figure text-secondary">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-              </svg>
-            </div>
-            <div class="stat-title">文章数量</div>
-            <div class="stat-value text-secondary" id="total-posts">-</div>
-            <div class="stat-desc">已发布文章</div>
-          </div>
-        </div>
-
-        <!-- 评论数量 -->
-        <div class="stats shadow bg-base-200">
-          <div class="stat">
-            <div class="stat-figure text-accent">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-              </svg>
-            </div>
-            <div class="stat-title">评论数量</div>
-            <div class="stat-value text-accent" id="total-comments">-</div>
-            <div class="stat-desc">用户互动</div>
-          </div>
+        <div class="flex gap-2">
+          <button id="refresh-button" class="btn btn-ghost">刷新</button>
+          <button id="logout-button" class="btn btn-outline">退出</button>
         </div>
       </div>
 
-      <!-- 文章排行榜 -->
-      <div class="card bg-base-200 shadow-xl">
-        <div class="card-body">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="card-title text-2xl">📊 文章浏览排行榜</h2>
-            <button id="refresh-btn" class="btn btn-sm btn-ghost">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-              </svg>
-              刷新
-            </button>
+      <div class="grid gap-4 md:grid-cols-4">
+        <div class="rounded-[1.75rem] border border-base-content/10 bg-base-200 p-5">
+          <div class="text-sm text-base-content/50">总评论</div>
+          <div id="count-total" class="mt-2 text-3xl font-semibold text-base-content">-</div>
+        </div>
+        <div class="rounded-[1.75rem] border border-base-content/10 bg-base-200 p-5">
+          <div class="text-sm text-base-content/50">待审核</div>
+          <div id="count-pending" class="mt-2 text-3xl font-semibold text-warning">-</div>
+        </div>
+        <div class="rounded-[1.75rem] border border-base-content/10 bg-base-200 p-5">
+          <div class="text-sm text-base-content/50">已通过</div>
+          <div id="count-approved" class="mt-2 text-3xl font-semibold text-success">-</div>
+        </div>
+        <div class="rounded-[1.75rem] border border-base-content/10 bg-base-200 p-5">
+          <div class="text-sm text-base-content/50">垃圾评论</div>
+          <div id="count-spam" class="mt-2 text-3xl font-semibold text-error">-</div>
+        </div>
+      </div>
+
+      <div class="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+        <section class="rounded-[1.75rem] border border-base-content/10 bg-base-200 p-5">
+          <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <h2 class="text-xl font-semibold text-base-content">评论列表</h2>
+            <div class="flex flex-col gap-3 md:flex-row">
+              <select id="status-filter" class="select select-bordered">
+                <option value="all">全部状态</option>
+                <option value="pending">待审核</option>
+                <option value="approved">已通过</option>
+                <option value="spam">垃圾评论</option>
+              </select>
+              <input
+                id="search-input"
+                type="text"
+                class="input input-bordered"
+                placeholder="搜索 slug / 昵称 / 内容"
+              />
+            </div>
           </div>
 
-          <div id="loading" class="flex justify-center py-8">
-            <span class="loading loading-spinner loading-lg"></span>
-          </div>
+          <div id="comment-feedback" class="mt-3 min-h-5 text-sm text-base-content/60"></div>
 
-          <div id="stats-table" class="hidden overflow-x-auto">
-            <table class="table table-zebra w-full">
+          <div class="mt-4 overflow-x-auto">
+            <table class="table">
               <thead>
                 <tr>
-                  <th class="w-16">排名</th>
-                  <th>文章标题</th>
-                  <th class="w-24 text-right">浏览量</th>
-                  <th class="w-24 text-right">评论</th>
+                  <th>文章</th>
+                  <th>作者</th>
+                  <th>内容</th>
+                  <th>状态</th>
+                  <th>时间</th>
+                  <th class="text-right">操作</th>
                 </tr>
               </thead>
-              <tbody id="stats-tbody">
-                <!-- 数据将通过 JavaScript 动态插入 -->
-              </tbody>
+              <tbody id="comment-table-body"></tbody>
             </table>
           </div>
+        </section>
 
-          <div id="error-container" class="hidden">
-            <div class="alert alert-error">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span id="error-text">加载数据失败</span>
-            </div>
+        <section class="rounded-[1.75rem] border border-base-content/10 bg-base-200 p-5">
+          <h2 class="text-xl font-semibold text-base-content">热门文章</h2>
+          <p class="mt-1 text-sm text-base-content/60">
+            按已通过评论数量排序。
+          </p>
+
+          <div class="mt-4 overflow-x-auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>文章</th>
+                  <th class="text-right">评论</th>
+                </tr>
+              </thead>
+              <tbody id="top-pages-body"></tbody>
+            </table>
           </div>
-        </div>
+        </section>
       </div>
-
-      <!-- 退出登录按钮 -->
-      <div class="mt-6 text-center">
-        <button id="logout-btn" class="btn btn-ghost btn-sm">
-          退出登录
-        </button>
-      </div>
-    </div>
+    </section>
   </div>
 
-  <script define:vars={{ PASSWORD_HASH, ARTALK_SERVER, SITE_NAME }}>
-    // 密码验证相关
-    const AUTH_KEY = 'blog_admin_auth';
-    const ARTALK_TOKEN_KEY = 'blog_artalk_token';
-    const AUTH_EXPIRY = 24 * 60 * 60 * 1000; // 24 小时
+  <script is:inline>
+    var SESSION_KEY = "blog_comment_admin_token";
 
-    // SHA-256 哈希函数
-    async function sha256(message) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
+    function getCommentApiBase() {
+      var host = window.location.hostname;
+      var protocol = window.location.protocol;
 
-    // 检查是否已登录
-    function checkAuth() {
-      const authData = localStorage.getItem(AUTH_KEY);
-      const tokenData = localStorage.getItem(ARTALK_TOKEN_KEY);
-
-      if (!authData || !tokenData) return false;
-
-      try {
-        const { hash, timestamp } = JSON.parse(authData);
-        const { token, expiry } = JSON.parse(tokenData);
-        const now = Date.now();
-
-        // 检查是否过期
-        if (now - timestamp > AUTH_EXPIRY || now > expiry) {
-          localStorage.removeItem(AUTH_KEY);
-          localStorage.removeItem(ARTALK_TOKEN_KEY);
-          return false;
-        }
-
-        // 检查哈希是否匹配
-        return hash === PASSWORD_HASH && token;
-      } catch (e) {
-        localStorage.removeItem(AUTH_KEY);
-        localStorage.removeItem(ARTALK_TOKEN_KEY);
-        return false;
+      if (host === "localhost" || host === "127.0.0.1") {
+        return protocol + "//" + host + ":4322/api/comments";
       }
+
+      return window.location.origin + "/api/comments";
     }
 
-    // 保存登录状态
-    function saveAuth(artalkToken, artalkExpiry) {
-      const authData = {
-        hash: PASSWORD_HASH,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(AUTH_KEY, JSON.stringify(authData));
-
-      const tokenData = {
-        token: artalkToken,
-        expiry: artalkExpiry
-      };
-      localStorage.setItem(ARTALK_TOKEN_KEY, JSON.stringify(tokenData));
+    function getToken() {
+      return sessionStorage.getItem(SESSION_KEY) || "";
     }
 
-    // 清除登录状态
-    function clearAuth() {
-      localStorage.removeItem(AUTH_KEY);
-      localStorage.removeItem(ARTALK_TOKEN_KEY);
+    function setToken(token) {
+      sessionStorage.setItem(SESSION_KEY, token);
     }
 
-    // 获取 Artalk Token
-    function getArtalkToken() {
-      try {
-        const tokenData = localStorage.getItem(ARTALK_TOKEN_KEY);
-        if (!tokenData) return null;
-        const { token } = JSON.parse(tokenData);
-        return token;
-      } catch (e) {
-        return null;
+    function clearToken() {
+      sessionStorage.removeItem(SESSION_KEY);
+    }
+
+    async function apiFetch(path, options) {
+      var response = await fetch(
+        getCommentApiBase() + path,
+        Object.assign(
+          {
+            headers: Object.assign(
+              {
+                Authorization: "Bearer " + getToken(),
+              },
+              options && options.headers ? options.headers : {}
+            ),
+          },
+          options || {}
+        )
+      );
+
+      if (response.status === 401) {
+        clearToken();
+        showLogin();
+        throw new Error("登录已失效");
       }
-    }
 
-    // 显示/隐藏界面
-    function showLogin() {
-      document.getElementById('login-form').classList.remove('hidden');
-      document.getElementById('stats-content').classList.add('hidden');
-    }
-
-    function showStats() {
-      document.getElementById('login-form').classList.add('hidden');
-      document.getElementById('stats-content').classList.remove('hidden');
-      loadStats();
-    }
-
-    // Artalk 管理员登录
-    async function loginArtalk(name, email, password) {
-      const response = await fetch(`${ARTALK_SERVER}/api/v2/auth/email/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          password: password
-        })
-      });
-
+      var data = await response.json();
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.msg || '登录失败');
+        throw new Error(data.message || "请求失败");
       }
 
-      const data = await response.json();
-
-      if (!data.token) {
-        throw new Error('登录响应格式错误');
-      }
-
-      return {
-        token: data.token,
-        expiry: Date.now() + 259200 * 1000 // 3天，与 Artalk 配置的 login_timeout 一致
-      };
+      return data;
     }
 
-    // 登录处理
-    async function handleLogin() {
-      const passwordInput = document.getElementById('password-input');
-      const artalkNameInput = document.getElementById('artalk-name-input');
-      const artalkEmailInput = document.getElementById('artalk-email-input');
-      const artalkPasswordInput = document.getElementById('artalk-password-input');
-      const errorMessage = document.getElementById('error-message');
-      const loginBtn = document.getElementById('login-btn');
+    function formatDate(value) {
+      return new Date(value).toLocaleString("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
 
-      const password = passwordInput.value.trim();
-      const artalkName = artalkNameInput.value.trim();
-      const artalkEmail = artalkEmailInput.value.trim();
-      const artalkPassword = artalkPasswordInput.value.trim();
+    function showLogin(message) {
+      document.getElementById("login-panel").classList.remove("hidden");
+      document.getElementById("admin-panel").classList.add("hidden");
+      document.getElementById("login-error").textContent = message || "";
+    }
 
-      if (!password) {
-        errorMessage.textContent = '请输入页面密码';
-        errorMessage.classList.remove('hidden');
+    function showAdmin() {
+      document.getElementById("login-panel").classList.add("hidden");
+      document.getElementById("admin-panel").classList.remove("hidden");
+      document.getElementById("login-error").textContent = "";
+    }
+
+    function renderSummary(summary) {
+      document.getElementById("count-total").textContent = summary.counts.total;
+      document.getElementById("count-pending").textContent = summary.counts.pending;
+      document.getElementById("count-approved").textContent = summary.counts.approved;
+      document.getElementById("count-spam").textContent = summary.counts.spam;
+
+      var topPagesBody = document.getElementById("top-pages-body");
+      topPagesBody.innerHTML = "";
+
+      if (!summary.topPages.length) {
+        var emptyRow = document.createElement("tr");
+        var cell = document.createElement("td");
+        cell.colSpan = 2;
+        cell.className = "py-6 text-center text-sm text-base-content/50";
+        cell.textContent = "暂无已通过评论";
+        emptyRow.appendChild(cell);
+        topPagesBody.appendChild(emptyRow);
         return;
       }
 
-      if (!artalkName || !artalkEmail || !artalkPassword) {
-        errorMessage.textContent = '请填写完整的 Artalk 管理员信息';
-        errorMessage.classList.remove('hidden');
+      summary.topPages.forEach(function(page) {
+        var row = document.createElement("tr");
+
+        var titleCell = document.createElement("td");
+        var titleDiv = document.createElement("div");
+        titleDiv.className = "font-medium text-base-content";
+        titleDiv.textContent = page.page_title || page.slug;
+
+        var slugDiv = document.createElement("div");
+        slugDiv.className = "text-xs text-base-content/50";
+        slugDiv.textContent = page.slug;
+
+        titleCell.appendChild(titleDiv);
+        titleCell.appendChild(slugDiv);
+
+        var countCell = document.createElement("td");
+        countCell.className = "text-right font-mono";
+        countCell.textContent = String(page.total);
+
+        row.appendChild(titleCell);
+        row.appendChild(countCell);
+        topPagesBody.appendChild(row);
+      });
+    }
+
+    function actionButton(label, className, handler) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = className;
+      button.textContent = label;
+      button.addEventListener("click", handler);
+      return button;
+    }
+
+    async function moderateComment(id, action) {
+      await apiFetch("/admin/moderate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: id, action: action }),
+      });
+    }
+
+    function renderComments(result) {
+      var feedback = document.getElementById("comment-feedback");
+      var body = document.getElementById("comment-table-body");
+      body.innerHTML = "";
+      feedback.textContent = "共 " + result.total + " 条";
+
+      if (!result.comments.length) {
+        var emptyRow = document.createElement("tr");
+        var cell = document.createElement("td");
+        cell.colSpan = 6;
+        cell.className = "py-8 text-center text-sm text-base-content/50";
+        cell.textContent = "没有匹配的评论";
+        emptyRow.appendChild(cell);
+        body.appendChild(emptyRow);
         return;
       }
 
-      loginBtn.disabled = true;
-      loginBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> 验证中...';
+      result.comments.forEach(function(comment) {
+        var row = document.createElement("tr");
 
-      try {
-        // 1. 验证页面密码
-        const hash = await sha256(password);
-        if (hash !== PASSWORD_HASH) {
-          throw new Error('页面密码错误');
+        var slugCell = document.createElement("td");
+        var titleDiv = document.createElement("div");
+        titleDiv.className = "font-medium text-base-content";
+        titleDiv.textContent = comment.pageTitle || comment.slug;
+        var slugDiv = document.createElement("div");
+        slugDiv.className = "text-xs text-base-content/50";
+        slugDiv.textContent = comment.slug;
+        slugCell.appendChild(titleDiv);
+        slugCell.appendChild(slugDiv);
+
+        var authorCell = document.createElement("td");
+        var authorDiv = document.createElement("div");
+        authorDiv.className = "font-medium";
+        authorDiv.textContent = comment.author;
+        authorCell.appendChild(authorDiv);
+        if (comment.email) {
+          var emailDiv = document.createElement("div");
+          emailDiv.className = "text-xs text-base-content/50";
+          emailDiv.textContent = comment.email;
+          authorCell.appendChild(emailDiv);
         }
 
-        // 2. 登录 Artalk
-        const { token, expiry } = await loginArtalk(artalkName, artalkEmail, artalkPassword);
+        var contentCell = document.createElement("td");
+        contentCell.className =
+          "max-w-md whitespace-pre-wrap break-words text-sm leading-6";
+        contentCell.textContent = comment.content;
 
-        // 3. 保存认证信息
-        saveAuth(token, expiry);
-        errorMessage.classList.add('hidden');
+        var statusCell = document.createElement("td");
+        var badge = document.createElement("span");
+        badge.className = "badge";
+        if (comment.status === "approved") badge.classList.add("badge-success");
+        if (comment.status === "pending") badge.classList.add("badge-warning");
+        if (comment.status === "spam") badge.classList.add("badge-error");
+        badge.textContent = comment.status;
+        statusCell.appendChild(badge);
 
-        // 清空密码输入框
-        passwordInput.value = '';
-        artalkPasswordInput.value = '';
+        var timeCell = document.createElement("td");
+        timeCell.className = "text-sm text-base-content/60";
+        timeCell.textContent = formatDate(comment.createdAt);
 
-        showStats();
-      } catch (e) {
-        errorMessage.textContent = `登录失败: ${e.message}`;
-        errorMessage.classList.remove('hidden');
-        console.error('登录错误:', e);
-      } finally {
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = '登录';
-      }
+        var actionCell = document.createElement("td");
+        actionCell.className = "text-right";
+        var actionGroup = document.createElement("div");
+        actionGroup.className = "flex justify-end gap-2";
+
+        if (comment.status !== "approved") {
+          actionGroup.appendChild(
+            actionButton("通过", "btn btn-success btn-xs", async function() {
+              await moderateComment(comment.id, "approve");
+              await refreshAdminData();
+            })
+          );
+        }
+
+        if (comment.status !== "pending") {
+          actionGroup.appendChild(
+            actionButton("待审", "btn btn-warning btn-xs", async function() {
+              await moderateComment(comment.id, "pending");
+              await refreshAdminData();
+            })
+          );
+        }
+
+        if (comment.status !== "spam") {
+          actionGroup.appendChild(
+            actionButton("垃圾", "btn btn-error btn-xs", async function() {
+              await moderateComment(comment.id, "spam");
+              await refreshAdminData();
+            })
+          );
+        }
+
+        actionGroup.appendChild(
+          actionButton("删除", "btn btn-ghost btn-xs", async function() {
+            if (!window.confirm("确认删除这条评论？")) return;
+            await moderateComment(comment.id, "delete");
+            await refreshAdminData();
+          })
+        );
+
+        actionCell.appendChild(actionGroup);
+
+        row.appendChild(slugCell);
+        row.appendChild(authorCell);
+        row.appendChild(contentCell);
+        row.appendChild(statusCell);
+        row.appendChild(timeCell);
+        row.appendChild(actionCell);
+        body.appendChild(row);
+      });
     }
 
-    // 加载统计数据
-    async function loadStats() {
-      const loading = document.getElementById('loading');
-      const statsTable = document.getElementById('stats-table');
-      const errorContainer = document.getElementById('error-container');
-
-      loading.classList.remove('hidden');
-      statsTable.classList.add('hidden');
-      errorContainer.classList.add('hidden');
+    async function refreshAdminData() {
+      var feedback = document.getElementById("comment-feedback");
+      feedback.textContent = "正在加载...";
 
       try {
-        const token = getArtalkToken();
-        if (!token) {
-          throw new Error('未找到认证令牌，请重新登录');
-        }
+        var status = document.getElementById("status-filter").value;
+        var query = document.getElementById("search-input").value.trim();
 
-        // 获取页面列表
-        const response = await fetch(`${ARTALK_SERVER}/api/v2/pages?site_name=${encodeURIComponent(SITE_NAME)}&limit=1000`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        var summary = await apiFetch("/admin/summary");
+        renderSummary(summary);
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            clearAuth();
-            showLogin();
-            throw new Error('认证已过期，请重新登录');
-          }
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (!data.pages) {
-          throw new Error('数据格式错误');
-        }
-
-        const pages = data.pages;
-
-        // 为每个页面获取评论数
-        await Promise.all(pages.map(async (page) => {
-          try {
-            const commentRes = await fetch(
-              `${ARTALK_SERVER}/api/v2/comments?site_name=${encodeURIComponent(SITE_NAME)}&page_key=${encodeURIComponent(page.key)}&limit=1`
-            );
-            if (commentRes.ok) {
-              const commentData = await commentRes.json();
-              page.comment_count = commentData.count || 0;
-            } else {
-              page.comment_count = 0;
-            }
-          } catch (e) {
-            page.comment_count = 0;
-          }
-        }));
-
-        // 计算总计
-        let totalPV = 0;
-        let totalComments = 0;
-
-        pages.forEach(page => {
-          totalPV += page.pv || 0;
-          totalComments += page.comment_count || 0;
-        });
-
-        // 更新顶部统计卡片
-        document.getElementById('total-pv').textContent = totalPV.toLocaleString();
-        document.getElementById('total-posts').textContent = pages.length.toLocaleString();
-        document.getElementById('total-comments').textContent = totalComments.toLocaleString();
-
-        // 按浏览量排序
-        pages.sort((a, b) => (b.pv || 0) - (a.pv || 0));
-
-        // 生成表格
-        const tbody = document.getElementById('stats-tbody');
-        tbody.innerHTML = '';
-
-        pages.slice(0, 20).forEach((page, index) => {
-          const row = document.createElement('tr');
-
-          // 排名
-          const rankCell = document.createElement('td');
-          rankCell.className = 'font-bold';
-          if (index === 0) {
-            rankCell.innerHTML = '🥇';
-          } else if (index === 1) {
-            rankCell.innerHTML = '🥈';
-          } else if (index === 2) {
-            rankCell.innerHTML = '🥉';
-          } else {
-            rankCell.textContent = index + 1;
-          }
-          row.appendChild(rankCell);
-
-          // 标题（带链接）
-          const titleCell = document.createElement('td');
-          const link = document.createElement('a');
-          link.href = page.key;
-          link.textContent = page.title || page.key;
-          link.className = 'link link-hover';
-          link.target = '_blank';
-          titleCell.appendChild(link);
-          row.appendChild(titleCell);
-
-          // 浏览量
-          const pvCell = document.createElement('td');
-          pvCell.className = 'text-right font-semibold';
-          pvCell.textContent = (page.pv || 0).toLocaleString();
-          row.appendChild(pvCell);
-
-          // 评论数
-          const commentCell = document.createElement('td');
-          commentCell.className = 'text-right';
-          commentCell.textContent = (page.comment_count || 0).toLocaleString();
-          row.appendChild(commentCell);
-
-          tbody.appendChild(row);
-        });
-
-        loading.classList.add('hidden');
-        statsTable.classList.remove('hidden');
-
+        var list = await apiFetch(
+          "/admin/list?status=" +
+            encodeURIComponent(status) +
+            "&q=" +
+            encodeURIComponent(query)
+        );
+        renderComments(list);
       } catch (error) {
-        console.error('加载统计数据失败:', error);
-        loading.classList.add('hidden');
-        errorContainer.classList.remove('hidden');
-        document.getElementById('error-text').textContent = `加载数据失败: ${error.message}`;
+        feedback.textContent = error.message || "加载失败";
       }
     }
 
-    // 事件监听
-    document.addEventListener('DOMContentLoaded', () => {
-      // 检查登录状态
-      if (checkAuth()) {
-        showStats();
+    async function tryLogin() {
+      var token = document.getElementById("admin-token").value.trim();
+      if (!token) {
+        showLogin("请输入管理令牌");
+        return;
+      }
+
+      setToken(token);
+
+      try {
+        await apiFetch("/admin/summary");
+        showAdmin();
+        await refreshAdminData();
+      } catch (error) {
+        clearToken();
+        showLogin(error.message || "登录失败");
+      }
+    }
+
+    function initAdminPage() {
+      var pageRoot = document.getElementById("admin-panel");
+      if (pageRoot.dataset.bound === "true") return;
+      pageRoot.dataset.bound = "true";
+
+      document.getElementById("login-button").addEventListener("click", tryLogin);
+      document.getElementById("admin-token").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+          tryLogin();
+        }
+      });
+      document.getElementById("refresh-button").addEventListener("click", refreshAdminData);
+      document.getElementById("logout-button").addEventListener("click", function() {
+        clearToken();
+        showLogin();
+      });
+      document.getElementById("status-filter").addEventListener("change", refreshAdminData);
+      document.getElementById("search-input").addEventListener("change", refreshAdminData);
+
+      if (getToken()) {
+        showAdmin();
+        refreshAdminData().catch(function() {
+          showLogin("管理令牌已失效");
+        });
       } else {
         showLogin();
       }
+    }
 
-      // 登录按钮
-      document.getElementById('login-btn').addEventListener('click', handleLogin);
-
-      // 密码输入框回车
-      const inputs = ['password-input', 'artalk-name-input', 'artalk-email-input', 'artalk-password-input'];
-      inputs.forEach(id => {
-        document.getElementById(id).addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') {
-            handleLogin();
-          }
-        });
-      });
-
-      // 退出登录按钮
-      document.getElementById('logout-btn').addEventListener('click', () => {
-        clearAuth();
-        showLogin();
-      });
-
-      // 刷新按钮
-      document.getElementById('refresh-btn').addEventListener('click', () => {
-        loadStats();
-      });
-    });
+    document.addEventListener("DOMContentLoaded", initAdminPage);
+    document.addEventListener("astro:page-load", initAdminPage);
   </script>
 </BaseLayout>

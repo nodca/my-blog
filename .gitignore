@@ -16,6 +16,7 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.local
 
 # macOS-specific files
 .DS_Store
@@ -29,3 +30,7 @@ public/pagefind/
 .codex
 src/content/blog/.codex
 src/content/blog/register-openai-quota.png
+data/comments.sqlite
+data/comments.sqlite-shm
+data/comments.sqlite-wal
+artalk-comments.json
