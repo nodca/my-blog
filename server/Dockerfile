@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 COPY server ./server
 
-RUN corepack enable && pnpm install --prod --frozen-lockfile --ignore-scripts
+RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile --ignore-scripts
 
 EXPOSE 4322
 
