@@ -26,6 +26,7 @@ pnpm-debug.log*
 
 # pagefind
 public/pagefind/
+.superpowers/
 
 .codex
 src/content/blog/.codex

@@ -2,20 +2,20 @@
 import { addDynamicIconSelectors } from "@iconify/tailwind";
 import typography from "@tailwindcss/typography";
 import daisyUI from "daisyui";
-import { SITE_THEME } from "./src/config";
 
 export default {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Inter"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        serif: ['"Playfair Display"', 'ui-serif', 'Georgia', 'serif'],
+        sans: ['"Inter"', "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ['"Playfair Display"', "ui-serif", "Georgia", "serif"],
       },
       colors: {
-        /* Define the true blood red for explicit tailwind utility use */
-        blood: '#e50000',
-      }
+        almond: "#FDF0D5",
+        harbor: "#003049",
+        pepper: "#D62828",
+      },
     },
   },
   safelist: [
@@ -29,35 +29,45 @@ export default {
   daisyui: {
     themes: [
       {
-        light: {
-          "primary": "#e50000", /* Blood Red */
-          "primary-content": "#ffffff",
-          "secondary": "#000000",
-          "accent": "#e50000",
-          "neutral": "#000000",
-          "base-100": "#f7f7f4", /* Paper White */
-          "base-content": "#000000", /* Absolute Black text */
-          "info": "#000000",
-          "success": "#000000",
-          "warning": "#e50000",
-          "error": "#e50000",
+        "editorial-light": {
+          primary: "#003049",
+          "primary-content": "#FDF0D5",
+          secondary: "#1F4256",
+          "secondary-content": "#FDF0D5",
+          accent: "#D62828",
+          "accent-content": "#FFF4EF",
+          neutral: "#003049",
+          "neutral-content": "#FDF0D5",
+          "base-100": "#FDF0D5",
+          "base-200": "#F7E5C3",
+          "base-300": "#EFD9B1",
+          "base-content": "#003049",
+          info: "#1F4256",
+          success: "#2A9D8F",
+          warning: "#D62828",
+          error: "#D62828",
         },
-        dark: {
-          "primary": "#e50000", /* Blood Red */
-          "primary-content": "#ffffff",
-          "secondary": "#ffffff",
-          "accent": "#e50000",
-          "neutral": "#ffffff",
-          "base-100": "#050505", /* Absolute Black */
-          "base-content": "#f7f7f4", /* Paper White text */
-          "info": "#ffffff",
-          "success": "#ffffff",
-          "warning": "#e50000",
-          "error": "#e50000",
-        }
-      }
+        "editorial-dark": {
+          primary: "#FDF0D5",
+          "primary-content": "#003049",
+          secondary: "#DCCFB6",
+          "secondary-content": "#0F2533",
+          accent: "#D62828",
+          "accent-content": "#FFF4EF",
+          neutral: "#FDF0D5",
+          "neutral-content": "#0F2533",
+          "base-100": "#0F2533",
+          "base-200": "#173648",
+          "base-300": "#20485C",
+          "base-content": "#FDF0D5",
+          info: "#DCCFB6",
+          success: "#5BB7A7",
+          warning: "#D62828",
+          error: "#D62828",
+        },
+      },
     ],
-    darkTheme: "dark", 
-    logs: false, 
+    darkTheme: "editorial-dark",
+    logs: false,
   },
 };

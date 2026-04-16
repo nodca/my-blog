@@ -1,0 +1,68 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  displayDate: string;
+  description?: string;
+  category?: string;
+  readingTime?: string;
+  headingTag?: "h2" | "h3";
+  className?: string;
+}
+
+const {
+  href,
+  title,
+  displayDate,
+  description,
+  category,
+  readingTime,
+  headingTag = "h2",
+  className = "",
+} = Astro.props as Props;
+
+const HeadingTag = headingTag;
+---
+
+<article
+  class:list={[
+    "group border-l-4 border-pepper bg-base-content/[0.035] p-6 transition-colors duration-300 hover:bg-base-content/[0.06] md:p-8",
+    className,
+  ]}
+>
+  <a href={href} class="block">
+    <div class="flex flex-col gap-3">
+      <time
+        class="font-mono text-xs font-bold uppercase tracking-widest text-pepper"
+      >
+        {displayDate}
+      </time>
+
+      <div>
+        <HeadingTag
+          class="mb-3 font-sans text-3xl font-black leading-none tracking-tighter text-base-content transition-colors group-hover:text-pepper md:text-4xl"
+        >
+          {title}
+        </HeadingTag>
+        {
+          description && (
+            <p class="text-lg font-medium leading-relaxed text-base-content/60">
+              {description}
+            </p>
+          )
+        }
+      </div>
+
+      {
+        (category || readingTime) && (
+          <div class="mt-1 flex flex-wrap items-center gap-4 text-xs font-mono text-base-content/45">
+            {category && (
+              <span class="uppercase tracking-[0.16em]">{category}</span>
+            )}
+            {readingTime && <span>{readingTime}</span>}
+          </div>
+        )
+      }
+    </div>
+  </a>
+</article>

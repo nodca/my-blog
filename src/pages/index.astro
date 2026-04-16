@@ -1,8 +1,8 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
-import { DATE_FORMAT } from "@config";
 import dayjs from "@utils/dayjs";
 import { Icon } from "astro-icon/components";
+import EditorialPostListItem from "@/components/EditorialPostListItem.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
 const posts = await getCollection("blog");
@@ -16,64 +16,69 @@ const recentPosts = posts
 
 <BaseLayout title="首页 - 记录生活与技术的个人博客">
   <div class="max-w-4xl mx-auto py-16 md:py-24">
-    <!-- Hero Section: Modern Tech Brutalism -->
     <header class="mb-32">
-      <div class="w-16 h-4 bg-blood mb-8"></div>
-      <h1 class="text-6xl md:text-[7rem] font-black tracking-tighter text-base-content mb-8 leading-[1.1] font-sans selection:bg-blood selection:text-white">
-        Hello,<br/>World.
+      <div class="mb-8 h-4 w-16 rounded-full bg-pepper"></div>
+      <h1
+        class="mb-8 font-sans text-6xl font-black leading-[1.1] tracking-tighter text-base-content selection:bg-pepper selection:text-white md:text-[7rem]"
+      >
+        Hello,<br />World.
       </h1>
-      <p class="text-2xl md:text-3xl text-base-content/80 font-bold max-w-2xl leading-tight mb-16 selection:bg-blood selection:text-white tracking-tight">
+      <p
+        class="mb-16 max-w-2xl text-2xl font-bold leading-tight tracking-tight text-base-content/75 selection:bg-pepper selection:text-white md:text-3xl"
+      >
         记录技术探索和生活碎片。
       </p>
-      
-      <div class="flex flex-wrap items-center gap-6 text-xl font-black tracking-tighter">
-        <a href="/blog" class="group flex items-center gap-2 text-base-content hover:text-blood transition-colors bg-base-content/5 px-6 py-3 rounded-full hover:bg-blood/10">
+
+      <div
+        class="flex flex-wrap items-center gap-6 text-xl font-black tracking-tighter"
+      >
+        <a
+          href="/blog"
+          class="group flex items-center gap-2 rounded-full bg-base-content px-6 py-3 text-base-100 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-pepper hover:text-white"
+        >
           <span>阅读文章</span>
-          <Icon name="lucide:arrow-right" class="w-6 h-6 transition-transform group-hover:translate-x-1" />
+          <Icon
+            name="lucide:arrow-right"
+            class="w-6 h-6 transition-transform group-hover:translate-x-1"
+          />
         </a>
-        <a href="/about" class="group flex items-center gap-2 text-base-content/50 hover:text-blood transition-colors px-4 py-3">
+        <a
+          href="/about"
+          class="group flex items-center gap-2 px-4 py-3 text-base-content/60 transition-colors hover:text-pepper"
+        >
           <span>关于我</span>
         </a>
       </div>
     </header>
 
-    <!-- Recent Posts: Modern Blocky List -->
     <section>
       <div class="flex items-center gap-4 mb-12">
-        <h2 class="text-3xl font-black tracking-tighter text-base-content selection:bg-blood selection:text-white">
+        <h2
+          class="text-3xl font-black tracking-tighter text-base-content selection:bg-pepper selection:text-white"
+        >
           最新发布
         </h2>
         <div class="flex-1 h-1 bg-base-content/10"></div>
-        <a href="/blog" class="text-sm font-black tracking-widest uppercase text-base-content/50 hover:text-blood transition-colors">
+        <a
+          href="/blog"
+          class="text-sm font-black tracking-widest uppercase text-base-content/50 transition-colors hover:text-pepper"
+        >
           查看全部
         </a>
       </div>
 
-      <div class="grid grid-cols-1 gap-6">
-        {recentPosts.map((post: CollectionEntry<"blog">) => (
-          <article class="group bg-base-content/[0.02] hover:bg-base-content/[0.05] border-l-4 border-transparent hover:border-blood transition-all duration-300 p-6 md:p-8 rounded-r-2xl">
-            <a href={`/blog/${post.slug}`} class="block">
-              <div class="flex flex-col gap-3">
-                <!-- Date column -->
-                <time class="text-xs font-bold tracking-widest font-mono text-blood uppercase">
-                  {dayjs(post.data.pubDate).format("YYYY-MM-DD")}
-                </time>
-                
-                <!-- Content column -->
-                <div>
-                  <h3 class="text-3xl md:text-4xl font-black text-base-content mb-3 leading-none tracking-tighter font-sans">
-                    {post.data.title}
-                  </h3>
-                  {post.data.description && (
-                    <p class="text-base-content/60 leading-relaxed text-lg font-medium">
-                      {post.data.description}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </a>
-          </article>
-        ))}
+      <div class="grid grid-cols-1 gap-5">
+        {
+          recentPosts.map((post) => (
+            <EditorialPostListItem
+              href={`/blog/${post.slug}`}
+              title={post.data.title}
+              description={post.data.description}
+              displayDate={dayjs(post.data.pubDate).format("YYYY-MM-DD")}
+              headingTag="h3"
+            />
+          ))
+        }
       </div>
     </section>
   </div>

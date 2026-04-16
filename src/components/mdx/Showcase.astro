@@ -17,7 +17,10 @@ const domain = new URL(url).hostname;
   class="website-badge btn btn-sm btn-outline gap-2"
   title={`Website: ${name} (${domain})`}
 >
-  <div class="status-dot flex h-3 w-3 items-center justify-center rounded-full bg-gray-200" title="Checking status...">
+  <div
+    class="status-dot flex h-3 w-3 items-center justify-center rounded-full bg-gray-200"
+    title="Checking status..."
+  >
     <div class="h-2 w-2 rounded-full"></div>
   </div>
 
@@ -46,7 +49,7 @@ const domain = new URL(url).hostname;
         })
         .catch(() => {
           dot.classList.remove("bg-gray-400");
-          dot.classList.add("bg-red-500");
+          dot.classList.add("bg-pepper");
           dotContainer.setAttribute("title", "Offline or unreachable");
         })
         .finally(() => {

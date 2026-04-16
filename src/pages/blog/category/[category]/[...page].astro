@@ -1,14 +1,13 @@
 ---
-import BaseCard from "@components/BaseCard.astro";
-import PostCard from "@components/PostCard.astro";
-import CardGroup from "@components/temple/CardGroup.astro";
 import Pagination from "@components/widgets/Pagination.astro";
 import { t } from "@config";
 import type { Page, Post } from "@interfaces/data";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { generatePageLinks } from "@utils/blogUtils";
+import dayjs from "@utils/dayjs";
 import { getCategoryPaginationPaths } from "@utils/paginationUtils";
 import { Icon } from "astro-icon/components";
+import EditorialPostListItem from "@/components/EditorialPostListItem.astro";
 
 export async function getStaticPaths({ paginate }: { paginate: any }) {
   return getCategoryPaginationPaths({ paginate });
@@ -22,38 +21,72 @@ const pageLinks = generatePageLinks(totalPages);
 ---
 
 <BaseLayout title={`${t("label.categoryPage")} - ${params.category}`}>
-  <BaseCard title={t("label.categoryPage")}>
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div class="flex items-center gap-2">
-        <Icon name="lucide:folder" class="w-6 h-6 text-primary" />
-        <h1 id="h1" class="text-2xl md:text-3xl font-bold">{params.category}</h1>
-        <div class="badge badge-primary">{page.total} {page.total === 1 ? t("label.post") : t("label.posts")}</div>
+  <div class="max-w-3xl mx-auto py-12 md:py-20 antialiased">
+    <header class="mb-16">
+      <div class="border-b border-base-content/10 pb-8">
+        <div
+          class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+        >
+          <div class="flex flex-wrap items-center gap-3">
+            <Icon name="lucide:folder" class="h-6 w-6 text-pepper" />
+            <h1
+              id="h1"
+              class="text-4xl font-extrabold tracking-tight text-base-content md:text-5xl"
+            >
+              {params.category}
+            </h1>
+            <span
+              class="font-mono text-xs uppercase tracking-[0.16em] text-base-content/50"
+            >
+              {page.total}
+              {page.total === 1 ? t("label.post") : t("label.posts")}
+            </span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-6 text-sm font-medium">
+            <a
+              href="/blog/categories"
+              class="text-base-content/60 transition-colors hover:text-pepper"
+            >
+              {t("label.allCategories")}
+            </a>
+            <a
+              href="/blog"
+              class="text-base-content/60 transition-colors hover:text-pepper"
+            >
+              {t("label.backToBlog")}
+            </a>
+          </div>
+        </div>
+
+        <p class="mt-6 text-sm text-base-content/60">
+          {t("label.categoryDescription")}
+        </p>
       </div>
-      <a href="/blog/categories" class="btn btn-outline btn-sm gap-2">
-        <Icon name="lucide:folder" class="w-4 h-4" />
-        <span>{t("label.allCategories")}</span>
-      </a>
+    </header>
+
+    <div class="mb-16 flex flex-col gap-5">
+      {
+        page.data.map((blog: Post) => (
+          <EditorialPostListItem
+            href={`/blog/${blog.slug}`}
+            title={blog.data.title}
+            description={blog.data.description}
+            displayDate={dayjs(blog.data.pubDate).format("YYYY.MM.DD")}
+            category={blog.data.categories?.[0]}
+            readingTime={blog.remarkPluginFrontmatter?.readingTime}
+          />
+        ))
+      }
     </div>
-    <div class="divider my-2"></div>
-    <p class="text-sm opacity-75">{t("label.categoryDescription")}</p>
-  </BaseCard>
-  <CardGroup cols="1" gap="6">
-    {
-      page.data.map((blog: Post) => (
-        <PostCard
-          title={blog.data.title}
-          image={blog.data.image}
-          description={blog.data.description}
-          url={"/blog/" + blog.slug}
-          pubDate={blog.data.pubDate}
-          badge={blog.data.badge}
-          categories={blog.data.categories}
-          tags={blog.data.tags}
-          word={blog.remarkPluginFrontmatter.totalCharCount}
-          time={blog.remarkPluginFrontmatter.readingTime}
-        />
-      ))
-    }
-  </CardGroup>
-  <Pagination page={page} totalPages={totalPages} pageLinks={pageLinks} baseUrl={`/blog/category/${params.category}`} />
+
+    <div class="border-t border-base-content/10 pt-8">
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        pageLinks={pageLinks}
+        baseUrl={`/blog/category/${params.category}`}
+      />
+    </div>
+  </div>
 </BaseLayout>

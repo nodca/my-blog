@@ -34,42 +34,57 @@ const navItems = typedMenu.map((item) => ({
 }));
 ---
 
-<header class="fixed top-0 left-0 right-0 z-50 bg-base-100/95 backdrop-blur-sm border-b border-base-content/10 transition-all duration-300">
-  <div class="max-w-4xl mx-auto px-6 sm:px-8 h-20 flex items-center justify-between">
-    
-    <!-- Logo / Title (Tech Brutalist Style) -->
-    <a href="/" class="text-2xl font-black font-sans tracking-tighter text-base-content hover:text-blood transition-colors flex items-center gap-3 lowercase">
-      <span class="w-4 h-4 bg-blood block rounded-sm"></span>
+<header
+  class="fixed top-0 left-0 right-0 z-50 border-b border-base-content/10 bg-base-100/90 backdrop-blur-md transition-all duration-300"
+>
+  <div
+    class="max-w-4xl mx-auto px-6 sm:px-8 h-20 flex items-center justify-between"
+  >
+    <a
+      href="/"
+      class="flex items-center gap-3 font-sans text-2xl font-black lowercase tracking-tighter text-base-content transition-colors hover:text-pepper"
+    >
+      <span class="block h-4 w-4 rounded-full bg-pepper"></span>
       {SITE_TITLE}
     </a>
 
-    <!-- Navigation & Actions -->
     <div class="flex items-center gap-4 sm:gap-8">
-      <nav class="hidden sm:flex items-center gap-8 text-sm font-black tracking-tight lowercase">
-        {navItems.map((item) => (
-          <a 
-            href={item.href} 
-            target={item.target || "_self"}
-            class={`transition-all px-3 py-1.5 rounded-md ${
-              (item.href === "/" ? currentPath === "/" : currentPath.startsWith(item.href))
-                ? "bg-base-content/10 text-base-content"
-                : "text-base-content/60 hover:bg-blood/10 hover:text-blood"
-            }`}
-          >
-            {item.text}
-          </a>
-        ))}
+      <nav
+        class="hidden sm:flex items-center gap-8 text-sm font-black tracking-tight lowercase"
+      >
+        {
+          navItems.map((item) => (
+            <a
+              href={item.href}
+              target={item.target || "_self"}
+              class={`transition-all px-3 py-1.5 rounded-md ${
+                (
+                  item.href === "/"
+                    ? currentPath === "/"
+                    : currentPath.startsWith(item.href)
+                )
+                  ? "bg-base-content text-base-100 shadow-sm"
+                  : "text-base-content/60 hover:bg-pepper/10 hover:text-pepper"
+              }`}
+            >
+              {item.text}
+            </a>
+          ))
+        }
       </nav>
 
       <div class="flex items-center pl-2 sm:pl-4 ml-2 sm:ml-0">
-        <ThemeToggle className="hover:text-blood hover:bg-blood/10 rounded-md transition-colors" />
+        <ThemeToggle
+          className="rounded-full transition-colors hover:bg-pepper/10 hover:text-pepper"
+        />
       </div>
-      
-      <!-- Mobile Menu Link -->
-      <a href="/blog/archives" class="sm:hidden text-sm font-black tracking-tight text-base-content/60 hover:text-blood lowercase px-3 py-1.5 rounded-md hover:bg-blood/10 transition-colors">
+
+      <a
+        href="/blog/archives"
+        class="sm:hidden rounded-full px-3 py-1.5 text-sm font-black lowercase tracking-tight text-base-content/60 transition-colors hover:bg-pepper/10 hover:text-pepper"
+      >
         menu
       </a>
     </div>
-
   </div>
 </header>

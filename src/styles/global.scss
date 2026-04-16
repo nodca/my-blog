@@ -3,13 +3,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Avant-Garde Red/White/Black Theme Overrides */
+/* Warm editorial palette tokens */
 :root {
-  /* Injecting pure Blood Red as the primary color across the entire site */
-  /* This overrides DaisyUI's primary theme color */
-  --p: 53.68% 0.25 25.5; /* oklch approx for #D90429 or strong red */
-  --pf: 43.68% 0.25 25.5; /* primary focus */
-  --pc: 100% 0 0; /* primary content (white text on red) */
+  --color-almond: #fdf0d5;
+  --color-almond-soft: #f7e5c3;
+  --color-almond-contrast: #fff4ef;
+  --color-harbor: #003049;
+  --color-harbor-deep: #0f2533;
+  --color-harbor-soft: #173648;
+  --color-pepper: #d62828;
 }
 
 /* Color scheme configuration to prevent Chrome's auto dark theme */
@@ -26,30 +28,34 @@
 html {
   @apply scroll-smooth;
   /* Apply our base sans-serif font to the body by default */
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-family:
+    "Inter",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif;
 }
 
-/* Avant-garde Editorial Overrides - Extreme Contrast */
 [data-theme-type="light"] body {
-  background-color: #f7f7f4; /* Clean paper/newsprint white */
-  color: #000000; /* Absolute pure black for maximum punch */
+  background-color: var(--color-almond);
+  color: var(--color-harbor);
 }
 
-/* 
-  FIX: Explicitly enforce extreme high contrast in dark mode.
-  We must override any Tailwind utility classes applied to the body or main sections 
-  that might be using dark gray instead of pure white. 
-*/
 [data-theme-type="dark"] body {
-  background-color: #050505 !important; /* Near absolute black */
-  color: #f7f7f4 !important; /* Paper white text */
+  background-color: var(--color-harbor-deep) !important;
+  color: var(--color-almond) !important;
 }
 
-/* Force headings and borders in dark mode to be visible */
-[data-theme-type="dark"] h1, 
-[data-theme-type="dark"] h2, 
-[data-theme-type="dark"] h3, 
-[data-theme-type="dark"] h4, 
+[data-theme-type="dark"] h1,
+[data-theme-type="dark"] h2,
+[data-theme-type="dark"] h3,
+[data-theme-type="dark"] h4,
 [data-theme-type="dark"] p,
 [data-theme-type="dark"] a,
 [data-theme-type="dark"] span {
@@ -60,28 +66,35 @@ html {
 [data-theme-type="dark"] .text-base-content\/80,
 [data-theme-type="dark"] .text-base-content\/70,
 [data-theme-type="dark"] .text-base-content\/50 {
-  color: #f7f7f4 !important;
+  color: var(--color-almond) !important;
   opacity: 1 !important;
 }
 
 [data-theme-type="dark"] .border-base-content,
 [data-theme-type="dark"] .border-base-content\/20,
 [data-theme-type="dark"] .border-base-content\/30 {
-  border-color: #f7f7f4 !important;
+  border-color: var(--color-almond) !important;
 }
 
 [data-theme-type="dark"] .bg-base-100,
 [data-theme-type="dark"] .bg-base-100\/95 {
-  background-color: #050505 !important;
+  background-color: var(--color-harbor-deep) !important;
 }
 
 body {
-  @apply antialiased selection:bg-primary selection:text-white;
+  @apply antialiased selection:bg-pepper selection:text-white;
 }
 
 /* Base typography for headings */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Playfair Display', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family:
+    "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
 }
 
 kbd {
@@ -90,7 +103,9 @@ kbd {
 
 code {
   font-size: 0.875em;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
 }
 
 .scrollbar-none {
@@ -101,35 +116,34 @@ code {
   }
 }
 
-/* Geek/Brutalist custom utilities */
+/* Softened editorial shadow helpers */
 @layer utilities {
   .brutal-shadow {
-    text-shadow: 4px 4px 0px #000000;
+    text-shadow: 2px 2px 0px rgb(0 48 73 / 18%);
   }
   .brutal-shadow-dark {
-    text-shadow: 4px 4px 0px #f7f7f4;
+    text-shadow: 2px 2px 0px rgb(253 240 213 / 22%);
   }
 }
 
-/* Ensure dark mode has the correct shadow color */
 [data-theme-type="dark"] .group:hover .group-hover\:brutal-shadow,
 [data-theme-type="dark"] .hover\:brutal-shadow:hover {
-  text-shadow: 3px 3px 0px #f7f7f4 !important;
+  text-shadow: 2px 2px 0px rgb(253 240 213 / 22%) !important;
 }
 
 [data-theme-type="light"] .group:hover .group-hover\:brutal-shadow,
 [data-theme-type="light"] .hover\:brutal-shadow:hover {
-  text-shadow: 3px 3px 0px #000000 !important;
+  text-shadow: 2px 2px 0px rgb(0 48 73 / 18%) !important;
 }
 
-/* Clean code block style - Redux for Red theme */
+/* Code block styling aligned with the new accent palette */
 .frosti-code {
   @apply relative my-8 border-y-2 border-base-content bg-transparent overflow-hidden;
 
   &-toolbar {
     @apply sticky top-0 z-10 flex justify-between items-center px-4 py-3 border-b-2 border-base-content text-xs font-mono uppercase tracking-widest text-base-content;
     &-language {
-      @apply text-xs font-bold text-primary; /* Red accent on language */
+      @apply text-xs font-bold text-accent;
     }
   }
 
@@ -155,13 +169,13 @@ code {
 /* Essential overrides for Pagefind search to match minimal style */
 #pagefind-search {
   --pagefind-ui-scale: 1;
-  --pagefind-ui-primary: oklch(var(--p)); /* Use our new red */
+  --pagefind-ui-primary: oklch(var(--a));
   --pagefind-ui-text: oklch(var(--bc));
   --pagefind-ui-background: transparent;
-  --pagefind-ui-border: oklch(var(--bc)); /* Pure black border */
+  --pagefind-ui-border: oklch(var(--bc));
   --pagefind-ui-border-width: 2px;
   --pagefind-ui-border-radius: 0;
-  --pagefind-ui-font: 'Inter', sans-serif;
+  --pagefind-ui-font: "Inter", sans-serif;
 
   .pagefind-ui__search-input {
     @apply input w-full rounded-none border-x-0 border-t-0 border-b-4 border-base-content focus:border-primary px-0 focus:outline-none bg-transparent font-serif text-2xl placeholder:text-base-content/20 transition-colors;
