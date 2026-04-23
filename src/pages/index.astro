@@ -6,7 +6,7 @@ import EditorialPostListItem from "@/components/EditorialPostListItem.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 
 const posts = await getCollection("blog");
-const recentPosts = posts
+const recentPosts: CollectionEntry<"blog">[] = posts
   .sort(
     (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
       new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),

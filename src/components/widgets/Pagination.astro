@@ -2,7 +2,7 @@
 import { t } from "@config";
 import type { PaginationProps } from "@interfaces/data";
 
-const { page, totalPages, baseUrl } = Astro.props as PaginationProps;
+const { page, totalPages } = Astro.props as PaginationProps;
 
 // Simple pagination logic for editorial style
 const prevUrl = page.url.prev;
