@@ -1,7 +1,7 @@
 ---
 title: "用Go复刻一个小型Claude Code: agent loop"
 description: "记录复刻Claude Code的心得和学习体会"
-pubDate: "2026-04-08"
+pubDate: "2026-04-23"
 categories:
   - 技术
   - Agent
@@ -207,4 +207,3 @@ for {
 3.真正的streaming。现在`callAnthropicStream`虽然名字里有stream，但抽象出来的还是完整Response，后面可以继续拆成事件流。
 
 4.上下文压缩。消息历史会越来越长，迟早要处理。
-
