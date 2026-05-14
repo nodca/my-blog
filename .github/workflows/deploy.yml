@@ -17,9 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_VERSION: "22"
+      PNPM_VERSION: "10"
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
       SERVER_USER: ${{ secrets.SERVER_USER }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       DEPLOY_PATH: /var/www/blog/
 
     steps:
@@ -29,7 +31,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -43,12 +45,23 @@ jobs:
       - name: Build site
         run: pnpm run build
 
+      - name: Validate deploy secrets
+        run: |
+          : "${SERVER_HOST:?Missing SERVER_HOST secret}"
+          : "${SERVER_USER:?Missing SERVER_USER secret}"
+          : "${SSH_PRIVATE_KEY:?Missing SSH_PRIVATE_KEY secret}"
+
       - name: Setup SSH
         run: |
           install -m 700 -d ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p "${SERVER_PORT:-22}" -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+
+      - name: Prepare target directory
+        run: |
+          ssh -p "${SERVER_PORT:-22}" "${SERVER_USER}@${SERVER_HOST}" \
+            "mkdir -p '${DEPLOY_PATH}'"
 
       - name: Deploy to server
         run: |
