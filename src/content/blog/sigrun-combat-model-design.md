@@ -381,18 +381,47 @@ def _terminal_hp_utility_predicted(row):
 
 这么做更贴合当前目标：运行时要快、简单、稳定。模型只需要一次 forward，mask 掉非法动作，然后从 policy logits 里选动作。
 
-动作级监督的核心不是 value head，而是 action-conditioned rollout 的聚合分数。当前综合分数是 clear-first 的：
+动作级监督的核心不是 value head，而是 action-conditioned rollout 的聚合分数。当前训练/产数据实际使用的版本是 `clear_first_hp_tail_risk_v2`。代码里的权重和公式大致是这样：
 
-```text
-score =
-  p_clear
-  + p_clear^2 * hp_value
-  - death_penalty
-  - low_hp_tail_penalty
-  - potion_penalty
+```python
+SCORING_FORMULA_VERSION = "clear_first_hp_tail_risk_v2"
+DEFAULT_SCORING_WEIGHTS = {
+    "p_clear": 1.0,
+    "hp_value": 1.0,
+    "death_rate": 2.0,
+    "low_hp_shortfall": 1.0,
+    "potion_cost": 0.1,
+}
+
+
+p_clear_term = p_clear * scoring_weight(scoring_weights, "p_clear")
+hp_term = (p_clear**2) * hp * scoring_weight(scoring_weights, "hp_value")
+death_penalty = death * scoring_weight(scoring_weights, "death_rate")
+low_hp_tail_penalty = tail * scoring_weight(scoring_weights, "low_hp_shortfall")
+potion_penalty = potion * scoring_weight(scoring_weights, "potion_cost")
+
+score = (
+    p_clear_term
+    + hp_term
+    - death_penalty
+    - low_hp_tail_penalty
+    - potion_penalty
+)
 ```
 
-这个公式有一个很重要的设计意图：胜率优先。HP 不是直接和胜率平起平坐，而是被 `p_clear^2` 调制。也就是说，只有当动作大概率能赢时，剩余 HP 才主要用于比较；如果一个动作容易死，它不会因为偶尔高 HP 结局而被误判成好动作。
+`hp` 来自 `hp_value`，通常是 `terminal_hp / start_max_hp` 截断到 `[0, 1]`；缺少终局 HP 时，代码才会退回到 `1 + normalized_hp_delta` 的截断值。`tail` 是低血短缺项，默认低血阈值是 `0.25`。
+
+如果只有单次 terminal outcome，`p_clear` 就是 win 的 `0/1`；如果是 action-conditioned 多次 rollout 聚合，`p_clear` 就是 win rate。训练侧还会把同一个公式算出的分数转成下一步动作 imitation 的权重：
+
+```python
+normalizer = rollout_score_positive_normalizer(DEFAULT_SCORING_WEIGHTS)
+multiplier = max(0.0, min(1.0, score / normalizer if normalizer > 0 else 0.0))
+weight = label_weight * multiplier
+```
+
+也就是说，负分或很差的 rollout 不会作为正向 imitation label 推动 policy；高分动作会通过 soft target 分布和样本权重共同影响训练。
+
+这个公式有一个很重要的设计意图：胜率优先。HP 不是直接和胜率平起平坐，而是被 `p_clear^2` 调制。也就是说，只有当动作大概率能赢时，剩余 HP 才主要用于比较；如果一个动作容易死，它不会因为偶尔高 HP 结局而被误判成好动作。死亡、低血尾部和药水消耗也没有被塞进 HP 项里，而是作为独立惩罚进入分数。
 
 把这个动作分数转成 soft policy target 后，policy head 学到的是“同一局面下哪些动作更值得选”。这比让 `V(s)` 去承担动作排序更干净，因为 `V(s)` 对同一帧所有候选动作本来就是同一个输入。
 
