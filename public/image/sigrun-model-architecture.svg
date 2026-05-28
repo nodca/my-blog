@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Sigrun 战斗模型架构</title>
+  <desc id="desc">Sigrun CombatPolicyValueV1 架构图：从可见战斗局面和真实合法动作，经过分层实体编码，输出策略分数和多头状态价值。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#151923"/>
+      <stop offset="55%" stop-color="#10151d"/>
+      <stop offset="100%" stop-color="#171b24"/>
+    </linearGradient>
+    <linearGradient id="input" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#335c67"/>
+      <stop offset="100%" stop-color="#223843"/>
+    </linearGradient>
+    <linearGradient id="model" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3f6f8f"/>
+      <stop offset="100%" stop-color="#253b59"/>
+    </linearGradient>
+    <linearGradient id="policy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5b8a72"/>
+      <stop offset="100%" stop-color="#2e5d4c"/>
+    </linearGradient>
+    <linearGradient id="value" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8f6a3f"/>
+      <stop offset="100%" stop-color="#5b4632"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#aeb7c4"/>
+    </marker>
+    <style>
+      .title { fill: #f4f7fb; font: 700 34px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .subtitle { fill: #b8c1cc; font: 500 18px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .box-title { fill: #ffffff; font: 700 21px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .box-text { fill: #e2e7ee; font: 500 15px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .small { fill: #c7d0da; font: 500 13px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .pill { fill: rgba(255,255,255,0.08); stroke: rgba(255,255,255,0.16); }
+      .box { stroke: rgba(255,255,255,0.18); stroke-width: 1.2; rx: 14; }
+      .arrow { stroke: #aeb7c4; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke-dasharray: 8 7; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect x="34" y="32" width="1212" height="656" rx="24" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+
+  <text x="72" y="82" class="title">Sigrun 战斗策略价值模型</text>
+  <text x="72" y="114" class="subtitle">可见战斗局面 + 真实合法动作 -> 策略分数 + 多头状态价值</text>
+
+  <rect x="72" y="164" width="248" height="360" class="box" fill="url(#input)"/>
+  <text x="96" y="205" class="box-title">输入</text>
+  <rect x="96" y="230" width="200" height="42" rx="10" class="pill"/>
+  <text x="113" y="256" class="box-text">可见战斗局面</text>
+  <rect x="96" y="286" width="200" height="42" rx="10" class="pill"/>
+  <text x="113" y="312" class="box-text">真实合法动作</text>
+  <rect x="96" y="342" width="200" height="42" rx="10" class="pill"/>
+  <text x="113" y="368" class="box-text">可见战斗记忆</text>
+  <rect x="96" y="398" width="200" height="42" rx="10" class="pill"/>
+  <text x="113" y="424" class="box-text">语义嵌入</text>
+  <text x="96" y="472" class="small">不输入隐藏抽牌顺序、未来随机性，</text>
+  <text x="96" y="494" class="small">也不重建虚假的非法动作。</text>
+
+  <rect x="410" y="156" width="320" height="376" class="box" fill="url(#model)"/>
+  <text x="436" y="198" class="box-title">共享实体表面</text>
+  <rect x="436" y="226" width="268" height="54" rx="10" class="pill"/>
+  <text x="456" y="249" class="box-text">类型化实体投影</text>
+  <text x="456" y="269" class="small">卡牌、充能球、敌人、遗物、能力</text>
+  <rect x="436" y="302" width="268" height="54" rx="10" class="pill"/>
+  <text x="456" y="325" class="box-text">分层宿主池化</text>
+  <text x="456" y="345" class="small">局部附属实体 -> 超级实体</text>
+  <rect x="436" y="378" width="268" height="54" rx="10" class="pill"/>
+  <text x="456" y="401" class="box-text">RMSNorm + SwiGLU 模块</text>
+  <text x="456" y="421" class="small">模型宽度 384，8 个注意力头</text>
+  <rect x="436" y="454" width="268" height="42" rx="10" class="pill"/>
+  <text x="456" y="480" class="box-text">因果可见记忆融合</text>
+
+  <rect x="830" y="156" width="330" height="158" class="box" fill="url(#policy)"/>
+  <text x="858" y="198" class="box-title">策略分支</text>
+  <text x="858" y="230" class="box-text">8 层策略主干</text>
+  <text x="858" y="256" class="box-text">动作列表打分 + 合法性掩码</text>
+  <text x="858" y="282" class="small">运行时动作选择在这里完成。</text>
+
+  <rect x="830" y="374" width="330" height="190" class="box" fill="url(#value)"/>
+  <text x="858" y="416" class="box-title">价值分支</text>
+  <text x="858" y="448" class="box-text">6 层价值主干</text>
+  <text x="858" y="474" class="box-text">胜率、血量变化、资源变化</text>
+  <text x="858" y="500" class="box-text">风险 / 分位数预留</text>
+  <text x="858" y="532" class="small">这是状态 V(s)，不是逐动作 Q(s,a)。</text>
+
+  <path d="M320 344 C350 344, 370 344, 410 344" class="arrow"/>
+  <path d="M730 276 C766 228, 788 218, 830 218" class="arrow"/>
+  <path d="M730 412 C766 460, 788 470, 830 470" class="arrow"/>
+
+  <rect x="184" y="592" width="914" height="54" rx="16" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/>
+  <text x="214" y="625" class="box-text">训练闭环：行为克隆冷启动 -> 冻结策略模拟展开 -> 动作条件软标签 -> 重训策略 / 价值</text>
+  <path d="M572 532 C572 566, 572 578, 572 592" class="arrow dash"/>
+</svg>
