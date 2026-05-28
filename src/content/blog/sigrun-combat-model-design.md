@@ -409,7 +409,7 @@ score = (
 )
 ```
 
-`hp` 来自 `hp_value`，通常是 `terminal_hp / start_max_hp` 截断到 `[0, 1]`；缺少终局 HP 时，代码才会退回到 `1 + normalized_hp_delta` 的截断值。`tail` 是低血短缺项，默认低血阈值是 `0.25`。
+`hp` 来自 `hp_value`，也就是 `terminal_hp / start_max_hp` 截断到 `[0, 1]`；缺少终局 HP 时不再用 HP delta 兜底生成 HP 价值。`tail` 是低血短缺项，默认低血阈值是 `0.25`。
 
 如果只有单次 terminal outcome，`p_clear` 就是 win 的 `0/1`；如果是 action-conditioned 多次 rollout 聚合，`p_clear` 就是 win rate。训练侧还会把同一个公式算出的分数转成下一步动作 imitation 的权重：
 
