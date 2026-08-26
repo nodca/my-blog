@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="780" viewBox="0 0 1280 780" role="img" aria-labelledby="title desc">
+  <title id="title">SakuraMod 卡牌视觉所有权分层</title>
+  <desc id="desc">池化 NCard 上的所有权：内容归属与布局路由决定路线，几何与渲染器借用原生控件，账本负责归还。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#151923"/>
+      <stop offset="55%" stop-color="#10151d"/>
+      <stop offset="100%" stop-color="#171b24"/>
+    </linearGradient>
+    <linearGradient id="route" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#335c67"/>
+      <stop offset="100%" stop-color="#223843"/>
+    </linearGradient>
+    <linearGradient id="life" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3f6f8f"/>
+      <stop offset="100%" stop-color="#253b59"/>
+    </linearGradient>
+    <linearGradient id="clear" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8a5a6e"/>
+      <stop offset="100%" stop-color="#5a3346"/>
+    </linearGradient>
+    <linearGradient id="classic" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6a5a8f"/>
+      <stop offset="100%" stop-color="#3d355c"/>
+    </linearGradient>
+    <linearGradient id="native" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5b8a72"/>
+      <stop offset="100%" stop-color="#2e5d4c"/>
+    </linearGradient>
+    <linearGradient id="ledger" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8f6a3f"/>
+      <stop offset="100%" stop-color="#5b4632"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#aeb7c4"/>
+    </marker>
+    <style>
+      .title { fill: #f4f7fb; font: 700 32px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .subtitle { fill: #b8c1cc; font: 500 17px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .box-title { fill: #ffffff; font: 700 18px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .box-text { fill: #e2e7ee; font: 500 14px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .small { fill: #c7d0da; font: 500 12.5px Inter, "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; }
+      .pill { fill: rgba(255,255,255,0.08); stroke: rgba(255,255,255,0.16); }
+      .box { stroke: rgba(255,255,255,0.18); stroke-width: 1.2; }
+      .arrow { stroke: #aeb7c4; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke-dasharray: 7 6; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="780" fill="url(#bg)"/>
+  <rect x="28" y="24" width="1224" height="732" rx="22" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+
+  <text x="60" y="68" class="title">池化 NCard 上的视觉所有权</text>
+  <text x="60" y="98" class="subtitle">内容归属决定走哪条路；布局渲染器画全脸；几何只改尺寸位置；原生控件继续拥有费用、附魔与异常。</text>
+
+  <rect x="60" y="128" width="280" height="196" rx="14" class="box" fill="url(#route)"/>
+  <text x="80" y="162" class="box-title">1. 路由</text>
+  <rect x="80" y="180" width="240" height="36" rx="9" class="pill"/>
+  <text x="94" y="203" class="box-text">SakuraCardCatalog 内容归属</text>
+  <rect x="80" y="226" width="240" height="36" rx="9" class="pill"/>
+  <text x="94" y="249" class="box-text">Kinomoto / Vanilla 路线</text>
+  <rect x="80" y="272" width="240" height="36" rx="9" class="pill"/>
+  <text x="94" y="295" class="box-text">Clear / Classic / None 布局</text>
+
+  <rect x="380" y="128" width="300" height="196" rx="14" class="box" fill="url(#life)"/>
+  <text x="400" y="162" class="box-title">2. 生命周期门面</text>
+  <rect x="400" y="180" width="260" height="36" rx="9" class="pill"/>
+  <text x="414" y="203" class="box-text">VisualLifecycle 恢复 + 应用</text>
+  <rect x="400" y="226" width="260" height="36" rx="9" class="pill"/>
+  <text x="414" y="249" class="box-text">GeometryLifecycle 尺寸位置</text>
+  <rect x="400" y="272" width="260" height="36" rx="9" class="pill"/>
+  <text x="414" y="295" class="box-text">薄补丁：一缝一口，不决策</text>
+
+  <path class="arrow" d="M340 226 H372"/>
+
+  <rect x="720" y="128" width="230" height="196" rx="14" class="box" fill="url(#clear)"/>
+  <text x="740" y="162" class="box-title">Clear 布局</text>
+  <text x="740" y="196" class="box-text">透明牌全脸 PNG</text>
+  <text x="740" y="222" class="box-text">粉金框 / 缎带 / 透明外缘</text>
+  <text x="740" y="248" class="box-text">拥有：face 贴图与点缀</text>
+  <text x="740" y="274" class="small">不拥有：手牌 X、网格居中</text>
+  <text x="740" y="296" class="small">隐藏原生肖像槽</text>
+
+  <rect x="980" y="128" width="230" height="196" rx="14" class="box" fill="url(#classic)"/>
+  <text x="1000" y="162" class="box-title">Classic 布局</text>
+  <text x="1000" y="196" class="box-text">库洛 / 小樱 / 符咒全脸</text>
+  <text x="1000" y="222" class="box-text">共享 Classic 渲染器</text>
+  <text x="1000" y="248" class="box-text">拥有：face 贴图与点缀</text>
+  <text x="1000" y="274" class="small">不拥有：手牌 X、网格居中</text>
+  <text x="1000" y="296" class="small">隐藏原生肖像槽</text>
+
+  <path class="arrow" d="M680 200 H712"/>
+  <path class="arrow" d="M680 252 H712"/>
+  <path class="arrow dash" d="M950 226 H972"/>
+
+  <rect x="60" y="360" width="850" height="360" rx="14" class="box" fill="rgba(255,255,255,0.04)"/>
+  <text x="84" y="396" class="box-title">3. 池化 NCard 节点树（示意）</text>
+  <text x="84" y="422" class="small">同一壳子会先后显示 Clear、Classic、原版或其他 Mod 的牌；变异必须可还原。</text>
+
+  <rect x="84" y="448" width="180" height="48" rx="10" class="pill"/>
+  <text x="104" y="478" class="box-text">NCard 根 Control</text>
+
+  <rect x="300" y="448" width="200" height="48" rx="10" class="pill"/>
+  <text x="324" y="478" class="box-text">Body / CardContainer</text>
+  <path class="arrow" d="M264 472 H292"/>
+
+  <rect x="560" y="436" width="160" height="34" rx="8" fill="url(#clear)" stroke="rgba(255,255,255,0.16)"/>
+  <text x="572" y="458" class="small">Sakura face 层</text>
+  <rect x="560" y="478" width="160" height="34" rx="8" fill="url(#classic)" stroke="rgba(255,255,255,0.16)"/>
+  <text x="572" y="500" class="small">（或 Classic face）</text>
+  <path class="arrow" d="M500 472 H552"/>
+
+  <rect x="300" y="520" width="200" height="40" rx="9" fill="url(#native)" stroke="rgba(255,255,255,0.16)"/>
+  <text x="318" y="545" class="box-text">EnergyIcon + 费用字</text>
+  <rect x="520" y="520" width="200" height="40" rx="9" fill="url(#native)" stroke="rgba(255,255,255,0.16)"/>
+  <text x="538" y="545" class="box-text">Title / Description</text>
+  <rect x="740" y="520" width="140" height="40" rx="9" fill="url(#native)" stroke="rgba(255,255,255,0.16)"/>
+  <text x="762" y="545" class="box-text">Portrait 槽</text>
+
+  <rect x="300" y="580" width="200" height="40" rx="9" fill="url(#native)" stroke="rgba(255,255,255,0.16)"/>
+  <text x="318" y="605" class="box-text">Unplayable 子覆盖</text>
+  <rect x="520" y="580" width="200" height="40" rx="9" fill="url(#native)" stroke="rgba(255,255,255,0.16)"/>
+  <text x="538" y="605" class="box-text">EnchantmentTab</text>
+  <rect x="740" y="580" width="140" height="40" rx="9" fill="url(#native)" stroke="rgba(255,255,255,0.16)"/>
+  <text x="758" y="605" class="box-text">Affliction</text>
+
+  <text x="84" y="660" class="small">绿色：原版继续拥有内容与多数可见性；布局只适配坐标。</text>
+  <text x="84" y="682" class="small">粉 / 紫：Sakura 创建的全脸层；切换路线时由 ledger 隐藏并归还借用属性。</text>
+  <text x="84" y="704" class="small">Portrait 槽在全脸卡上走 MissingPortraitPath；可见脸不进原生肖像所有权。</text>
+
+  <rect x="940" y="360" width="270" height="360" rx="14" class="box" fill="url(#ledger)"/>
+  <text x="960" y="396" class="box-title">4. Mutation Ledger</text>
+  <text x="960" y="428" class="box-text">每个池化节点一本账</text>
+  <rect x="960" y="450" width="230" height="48" rx="9" class="pill"/>
+  <text x="974" y="470" class="box-text">Begin：旧渲染器先还账</text>
+  <text x="974" y="488" class="small">再捕获新基线</text>
+  <rect x="960" y="512" width="230" height="48" rx="9" class="pill"/>
+  <text x="974" y="532" class="box-text">Borrow：只登记改过的属性</text>
+  <text x="974" y="550" class="small">Position / Size / Texture / Theme</text>
+  <rect x="960" y="574" width="230" height="48" rx="9" class="pill"/>
+  <text x="974" y="594" class="box-text">Restore：精确装回原值</text>
+  <text x="974" y="612" class="small">有 override 就还 override</text>
+  <rect x="960" y="636" width="230" height="48" rx="9" class="pill"/>
+  <text x="974" y="656" class="box-text">同渲染器重入保首基线</text>
+  <text x="974" y="674" class="small">避免坐标二次映射漂移</text>
+
+  <path class="arrow dash" d="M910 540 H932"/>
+</svg>
