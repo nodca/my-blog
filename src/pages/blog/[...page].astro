@@ -19,48 +19,30 @@ const pageLinks = generatePageLinks(totalPages);
 ---
 
 <BaseLayout title={t("nav.blog") || "Blog"}>
-  <div class="max-w-3xl mx-auto py-12 md:py-20 antialiased">
-    <!-- Editorial Header -->
-    <header class="mb-16">
-      <h1
-        class="text-4xl md:text-5xl font-extrabold tracking-tight text-base-content mb-6 font-serif"
-      >
-        {t("nav.blog") || "Articles"}
-      </h1>
-      <p class="text-lg text-base-content/60 font-medium max-w-2xl">
-        All entries, thoughts, and writings.
-      </p>
-
-      <!-- Minimalist Sub-navigation -->
-      <nav
-        class="flex flex-wrap items-center gap-6 mt-10 text-sm font-medium border-t border-base-content/10 pt-6"
-      >
-        <a
-          href="/blog/archives"
-          class="text-base-content/60 transition-colors hover:text-pepper"
-          >归档</a
-        >
-        <a
-          href="/blog/categories"
-          class="text-base-content/60 transition-colors hover:text-pepper"
-          >分类</a
-        >
-        <a
-          href="/blog/tags"
-          class="text-base-content/60 transition-colors hover:text-pepper"
-          >标签</a
-        >
-        <a
-          href="/blog/search"
-          class="text-base-content/60 transition-colors hover:text-pepper"
-          >搜索</a
-        >
-      </nav>
+  <div class="pt-8 md:pt-16">
+    <header class="swiss-grid gap-y-6 pb-12 md:pb-20">
+      <div class="col-span-4 md:col-span-3">
+        <p class="swiss-label text-pepper">Archive</p>
+        <p class="swiss-label mt-2 text-base-content/60">
+          {page.total} 篇 · 第 {page.current}/{totalPages} 页
+        </p>
+      </div>
+      <div class="col-span-4 md:col-span-9">
+        <h1 class="text-6xl font-extrabold leading-none tracking-[-0.04em] md:text-8xl">
+          {t("nav.blog") || "Articles"}
+        </h1>
+        <nav class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+          <a href="/blog/archives" class="hover:text-pepper">归档</a>
+          <a href="/blog/categories" class="hover:text-pepper">分类</a>
+          <a href="/blog/tags" class="hover:text-pepper">标签</a>
+          <a href="/blog/search" class="hover:text-pepper">搜索</a>
+        </nav>
+      </div>
     </header>
 
-    <div class="flex flex-col gap-5 mb-16">
+    <div class="mb-16 border-b border-base-content">
       {
-        page.data.map((blog: Post) => (
+        page.data.map((blog: Post, i: number) => (
           <EditorialPostListItem
             href={`/blog/${blog.slug}`}
             title={blog.data.title}
@@ -68,13 +50,13 @@ const pageLinks = generatePageLinks(totalPages);
             displayDate={dayjs(blog.data.pubDate).format("YYYY.MM.DD")}
             category={blog.data.categories?.[0]}
             readingTime={blog.remarkPluginFrontmatter?.readingTime}
+            index={(page.current - 1) * page.size + i + 1}
           />
         ))
       }
     </div>
 
-    <!-- Pagination -->
-    <div class="border-t border-base-content/10 pt-8">
+    <div>
       <Pagination
         page={page}
         totalPages={totalPages}

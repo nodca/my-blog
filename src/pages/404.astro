@@ -2,7 +2,6 @@
 import { t } from "@config";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { Icon } from "astro-icon/components";
-import MainCard from "@/components/MainCard.astro";
 
 Astro.response.status = 404;
 const pathname = Astro.url.pathname;
@@ -45,42 +44,52 @@ if (pathname.startsWith("/blog/tag/")) {
 ---
 
 <BaseLayout title={title} isIndexed={false}>
-  <MainCard title={title} description={description} textOverlay={textOverlay} infoIcon="lucide:help-circle">
-    <div class="flex flex-col sm:flex-row gap-4 justify-center my-8">
-      <a href={primaryAction.href} class="btn btn-primary gap-2 btn-shine-effect">
-        <Icon name={primaryAction.icon} class="w-5 h-5" />
-        <span>{primaryAction.text}</span>
-      </a>
-      <button id="goBackBtn" class="btn btn-outline gap-2" onclick="history.back()">
-        <Icon name="lucide:corner-up-left" class="w-5 h-5" />
-        <span>{t("label.404goBack")}</span>
-      </button>
-    </div>
-    <div class="divider my-6">
-      <Icon name="lucide:map" class="w-10 h-10" />
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <a href="/blog" class="card bg-base-200 p-4 hover-lift text-center transition-all duration-300">
-        <div class="text-info mb-2">
-          <Icon name="lucide:book-open" class="w-8 h-8 mx-auto" />
+  <div class="pt-8 md:pt-16">
+    <header class="swiss-grid gap-y-6 pb-12 md:pb-16">
+      <div class="col-span-4 md:col-span-3">
+        <p class="swiss-label text-pepper">Error</p>
+        <p class="swiss-label mt-2 text-base-content/60">{pathname}</p>
+      </div>
+      <div class="col-span-4 md:col-span-9">
+        <p
+          class="text-[7rem] font-extrabold leading-[0.85] tracking-[-0.06em] md:text-[14rem]"
+          aria-hidden="true"
+        >
+          {textOverlay}<span class="text-pepper">.</span>
+        </p>
+        <h1 class="mt-8 text-3xl font-bold tracking-tight md:text-4xl">{title}</h1>
+        <p class="mt-4 max-w-xl text-lg text-base-content/65">{description}</p>
+        <div class="mt-10 flex flex-wrap gap-4">
+          <a href={primaryAction.href} class="btn btn-primary gap-2">
+            <Icon name={primaryAction.icon} class="w-5 h-5" />
+            <span>{primaryAction.text}</span>
+          </a>
+          <button id="goBackBtn" class="btn gap-2" onclick="history.back()">
+            <Icon name="lucide:corner-up-left" class="w-5 h-5" />
+            <span>{t("label.404goBack")}</span>
+          </button>
         </div>
-        <h3 class="font-semibold">{t("label.404exploreBlog")}</h3>
-      </a>
+      </div>
+    </header>
 
-      <a href="/blog/archives" class="card bg-base-200 p-4 hover-lift text-center transition-all duration-300">
-        <div class="text-info mb-2">
-          <Icon name="lucide:archive" class="w-8 h-8 mx-auto" />
-        </div>
-        <h3 class="font-semibold">{t("label.404browseArchives")}</h3>
-      </a>
-
-      <a href="/blog/search" class="card bg-base-200 p-4 hover-lift text-center transition-all duration-300">
-        <div class="text-info mb-2">
-          <Icon name="lucide:search" class="w-8 h-8 mx-auto" />
-        </div>
-        <h3 class="font-semibold">{t("label.404searchContent")}</h3>
-      </a>
-    </div>
-  </MainCard>
+    <nav class="swiss-grid border-t-4 border-base-content">
+      {
+        [
+          { href: "/blog", label: t("label.404exploreBlog") },
+          { href: "/blog/archives", label: t("label.404browseArchives") },
+          { href: "/blog/search", label: t("label.404searchContent") },
+        ].map((item, i) => (
+          <a
+            href={item.href}
+            class="group col-span-4 border-b border-base-content py-6 md:col-span-4 md:border-b-0"
+          >
+            <span class="text-sm font-bold text-pepper">{String(i + 1).padStart(2, "0")}</span>
+            <span class="mt-2 block text-2xl font-bold tracking-tight group-hover:text-pepper">
+              {item.label} →
+            </span>
+          </a>
+        ))
+      }
+    </nav>
+  </div>
 </BaseLayout>
