@@ -28,7 +28,23 @@ export default defineConfig({
   integrations: [updateConfig(), expressiveCode({
     themes: [CODE_THEME],
     styleOverrides: {
-      borderRadius: "0.75rem",
+      borderRadius: "0",
+      borderWidth: "1px",
+      borderColor: "currentColor",
+      codeFontFamily:
+        'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace',
+      uiFontFamily:
+        '"Inter", "Helvetica Neue", Arial, "PingFang SC", "Noto Sans SC", sans-serif',
+      codeFontSize: "0.875rem",
+      frames: {
+        shadowColor: "transparent",
+        frameBoxShadowCssValue: "none",
+        editorActiveTabIndicatorTopColor: "#E30613",
+        editorTabBarBackground: "transparent",
+        terminalTitlebarBackground: "transparent",
+        terminalTitlebarBorderBottomColor: "currentColor",
+        terminalTitlebarDotsOpacity: "0",
+      },
     },
   }), mdx(), icon(), terser({
     compress: true,

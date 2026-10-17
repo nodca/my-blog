@@ -3,20 +3,28 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="About">
-  <article class="max-w-3xl mx-auto py-16 md:py-24 antialiased">
-    
-    <header class="mb-16 md:mb-24 text-center">
-      <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight text-base-content mb-8 font-serif leading-[1.1]">
-        About Me
-      </h1>
-      <div class="w-16 h-px bg-base-content/20 mx-auto"></div>
+  <article class="pt-8 md:pt-16 antialiased">
+    <header class="swiss-grid gap-y-6 pb-12 md:pb-20">
+      <div class="col-span-4 md:col-span-3">
+        <p class="swiss-label text-pepper">About</p>
+      </div>
+      <div class="col-span-4 md:col-span-9">
+        <h1 class="text-6xl font-extrabold leading-none tracking-[-0.04em] md:text-8xl">
+          About Me<span class="text-pepper">.</span>
+        </h1>
+      </div>
     </header>
 
-    <div class="prose prose-lg md:prose-xl mx-auto text-center prose-p:text-base-content/70 prose-p:leading-relaxed font-serif italic">
-      <p>
-        "I am still working on this page. More words and stories will fill this space soon."
-      </p>
+    <div class="swiss-grid border-t-4 border-base-content pt-10">
+      <div class="col-span-4 md:col-span-3">
+        <p class="swiss-label text-base-content/50">Status</p>
+      </div>
+      <div class="col-span-4 md:col-span-6">
+        <p class="text-xl font-medium leading-relaxed md:text-2xl">
+          I am still working on this page. More words and stories will fill this
+          space soon.
+        </p>
+      </div>
     </div>
-
   </article>
 </BaseLayout>

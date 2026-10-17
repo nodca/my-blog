@@ -2,17 +2,7 @@
 import { SITE_MENU, SITE_TITLE } from "../config";
 import ThemeToggle from "./widgets/ThemeToggle.astro";
 
-// Get current path to determine active link
 const currentPath = Astro.url.pathname;
-
-// Type safely process SITE_MENU before rendering
-type SubMenuItem = {
-  id: string;
-  text: string;
-  href: string;
-  svg: string;
-  target?: string;
-};
 
 type MenuItem = {
   id: string;
@@ -20,71 +10,57 @@ type MenuItem = {
   href: string;
   svg: string;
   target?: string;
-  subItems?: SubMenuItem[];
 };
 
-// Ensure the menu is properly typed
-const typedMenu = SITE_MENU as MenuItem[];
-
-// For the minimalist top nav, we flatten the menu and only take top level
-const navItems = typedMenu.map((item) => ({
+const navItems = (SITE_MENU as MenuItem[]).map((item) => ({
   text: item.text,
   href: item.href,
   target: item.target,
 }));
+
+const isActive = (href: string) =>
+  href === "/" ? currentPath === "/" : currentPath.startsWith(href);
 ---
 
-<header
-  class="fixed top-0 left-0 right-0 z-50 border-b border-base-content/10 bg-base-100/90 backdrop-blur-md transition-all duration-300"
->
+<header class="fixed top-0 left-0 right-0 z-50 bg-base-100 border-b border-base-content">
   <div
-    class="max-w-4xl mx-auto px-6 sm:px-8 h-20 flex items-center justify-between"
+    class="mx-auto grid h-16 max-w-[1280px] grid-cols-4 items-center gap-x-4 px-5 sm:px-8 md:grid-cols-12 md:gap-x-6 lg:px-12"
   >
     <a
       href="/"
-      class="flex items-center gap-3 font-sans text-2xl font-black lowercase tracking-tighter text-base-content transition-colors hover:text-pepper"
+      class="col-span-2 flex items-center gap-3 md:col-span-3 text-base font-bold tracking-tight text-base-content hover:text-pepper"
     >
-      <span class="block h-4 w-4 rounded-full bg-pepper"></span>
+      <span class="block h-4 w-4 bg-pepper" aria-hidden="true"></span>
       {SITE_TITLE}
     </a>
 
-    <div class="flex items-center gap-4 sm:gap-8">
-      <nav
-        class="hidden sm:flex items-center gap-8 text-sm font-black tracking-tight lowercase"
-      >
-        {
-          navItems.map((item) => (
-            <a
-              href={item.href}
-              target={item.target || "_self"}
-              class={`transition-all px-3 py-1.5 rounded-md ${
-                (
-                  item.href === "/"
-                    ? currentPath === "/"
-                    : currentPath.startsWith(item.href)
-                )
-                  ? "bg-base-content text-base-100 shadow-sm"
-                  : "text-base-content/60 hover:bg-pepper/10 hover:text-pepper"
-              }`}
-            >
-              {item.text}
-            </a>
-          ))
-        }
-      </nav>
+    <nav class="hidden md:col-span-8 md:flex items-center gap-6 lg:gap-8 text-sm font-medium">
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            target={item.target || "_self"}
+            class:list={[
+              "border-b-2 py-1 transition-colors",
+              isActive(item.href)
+                ? "border-pepper text-base-content"
+                : "border-transparent text-base-content/60 hover:text-base-content",
+            ]}
+          >
+            {item.text}
+          </a>
+        ))
+      }
+    </nav>
 
-      <div class="flex items-center pl-2 sm:pl-4 ml-2 sm:ml-0">
-        <ThemeToggle
-          className="rounded-full transition-colors hover:bg-pepper/10 hover:text-pepper"
-        />
-      </div>
-
+    <div class="col-span-2 md:col-span-1 flex items-center justify-end gap-2">
       <a
         href="/blog/archives"
-        class="sm:hidden rounded-full px-3 py-1.5 text-sm font-black lowercase tracking-tight text-base-content/60 transition-colors hover:bg-pepper/10 hover:text-pepper"
+        class="md:hidden swiss-label text-base-content hover:text-pepper"
       >
-        menu
+        Menu
       </a>
+      <ThemeToggle className="-mr-2" />
     </div>
   </div>
 </header>

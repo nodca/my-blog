@@ -21,9 +21,9 @@ const pageLinks = generatePageLinks(totalPages);
 ---
 
 <BaseLayout title={`${t("label.tagPage")} - ${params.tag}`}>
-  <div class="max-w-3xl mx-auto py-12 md:py-20 antialiased">
+  <div class="pt-8 md:pt-16">
     <header class="mb-16">
-      <div class="border-b border-base-content/10 pb-8">
+      <div class="border-b border-base-content pb-8">
         <div
           class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
         >
@@ -31,12 +31,12 @@ const pageLinks = generatePageLinks(totalPages);
             <Icon name="lucide:tag" class="h-6 w-6 text-pepper" />
             <h1
               id="h1"
-              class="text-4xl font-extrabold tracking-tight text-base-content md:text-5xl"
+              class="text-5xl font-extrabold tracking-[-0.04em] text-base-content md:text-7xl"
             >
               {params.tag}
             </h1>
             <span
-              class="font-mono text-xs uppercase tracking-[0.16em] text-base-content/50"
+              class="swiss-label text-base-content/50"
             >
               {page.total}
               {page.total === 1 ? t("label.post") : t("label.posts")}
@@ -65,7 +65,7 @@ const pageLinks = generatePageLinks(totalPages);
       </div>
     </header>
 
-    <div class="mb-16 flex flex-col gap-5">
+    <div class="mb-16 border-b border-base-content">
       {
         page.data.map((blog: Post) => (
           <EditorialPostListItem
@@ -80,7 +80,7 @@ const pageLinks = generatePageLinks(totalPages);
       }
     </div>
 
-    <div class="border-t border-base-content/10 pt-8">
+    <div class="border-t border-base-content pt-8">
       <Pagination
         page={page}
         totalPages={totalPages}

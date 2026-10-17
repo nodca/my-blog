@@ -29,71 +29,63 @@ const url = new URL(`/blog/${blog.slug}`, Astro.url.origin);
   title={blog.data.title}
   description={blog.data.description}
 >
-  <article class="max-w-3xl mx-auto py-12 md:py-20 antialiased w-full">
-    
-    <!-- Editorial Post Header -->
-    <header class="mb-14 md:mb-20">
-      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-base-content mb-8 font-serif leading-[1.15]">
-        {blog.data.title}
-      </h1>
-      
-      {blog.data.description && (
-        <p class="text-xl md:text-2xl text-base-content/60 font-medium leading-relaxed mb-8">
-          {blog.data.description}
-        </p>
-      )}
-
-      <!-- Minimalist Meta Information -->
-      <div class="flex flex-wrap items-center gap-4 text-sm font-mono text-base-content/50 border-t border-base-content/10 pt-6">
-        <time datetime={blog.data.pubDate.toISOString()}>
+  <article class="pt-8 md:pt-16 antialiased w-full">
+    <header class="swiss-grid gap-y-6 pb-10 md:pb-16">
+      <div class="col-span-4 md:col-span-3 flex flex-row flex-wrap gap-x-4 gap-y-1 md:flex-col md:pt-3">
+        <time datetime={blog.data.pubDate.toISOString()} class="swiss-label tabular-nums text-pepper">
           {displayDate}
         </time>
-        
-        {remarkPluginFrontmatter?.readingTime && (
-          <>
-            <span class="opacity-40">&bull;</span>
-            <span>{remarkPluginFrontmatter.readingTime}</span>
-          </>
-        )}
-        
         {blog.data.categories?.length > 0 && (
-          <>
-            <span class="opacity-40">&bull;</span>
-            <span class="uppercase tracking-widest">{blog.data.categories[0]}</span>
-          </>
+          <span class="swiss-label text-base-content/60">{blog.data.categories[0]}</span>
+        )}
+        {remarkPluginFrontmatter?.readingTime && (
+          <span class="swiss-label text-base-content/60">{remarkPluginFrontmatter.readingTime}</span>
+        )}
+      </div>
+      <div class="col-span-4 md:col-span-9">
+        <h1 class="text-4xl font-extrabold leading-[1.05] tracking-[-0.035em] text-base-content sm:text-5xl md:text-6xl lg:text-7xl">
+          {blog.data.title}
+        </h1>
+        {blog.data.description && (
+          <p class="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-base-content/65 md:text-xl">
+            {blog.data.description}
+          </p>
         )}
       </div>
     </header>
 
-    <!-- Hero Image (if exists) -->
+    <div class="border-t-4 border-base-content"></div>
+
     {blog.data.image && (
-      <figure class="mb-16 -mx-6 sm:mx-0">
-        <Image 
-          src={blog.data.image} 
-          alt={blog.data.title} 
-          width={1200} 
-          height={630} 
-          class="w-full h-auto object-cover sm:rounded-lg"
-          loading="eager"
-        />
+      <figure class="mt-10 swiss-grid">
+        <div class="col-span-4 md:col-span-9 md:col-start-4">
+          <Image
+            src={blog.data.image}
+            alt={blog.data.title}
+            width={1200}
+            height={630}
+            class="w-full h-auto object-cover"
+            loading="eager"
+          />
+        </div>
       </figure>
     )}
 
-    <!-- Prose Content -->
-    <div 
-      id="content" 
-      class="prose prose-lg md:prose-xl max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-a:font-medium prose-a:underline-offset-4 prose-a:decoration-1 hover:prose-a:decoration-2 prose-blockquote:border-l-base-content/20 prose-blockquote:text-base-content/70 prose-blockquote:font-serif prose-blockquote:italic prose-img:rounded-lg prose-img:w-full mb-24"
-    >
-      <Content />
-    </div>
-
+    <div class="swiss-grid mt-10 md:mt-14">
+      <div class="col-span-4 md:col-span-9 md:col-start-4">
+        <div
+          id="content"
+          class="prose swiss-prose max-w-[42rem] prose-headings:font-sans prose-img:w-full mb-20"
+        >
+          <Content />
+        </div>
     <!-- Article Footer (Tags & License) -->
-    <footer class="border-t border-base-content/10 pt-10 mt-10">
+    <footer class="border-t border-base-content pt-8 mt-10">
       {blog.data.tags?.length > 0 && (
         <div class="flex flex-wrap gap-2 mb-10">
-          <span class="text-sm font-medium text-base-content/40 uppercase tracking-widest mr-2">Tags:</span>
+          <span class="swiss-label text-base-content/50 mr-2 self-center">Tags</span>
           {blog.data.tags.map((tag: string) => (
-            <a href={`/blog/tags#${tag}`} class="text-sm font-mono text-base-content/60 hover:text-base-content transition-colors underline decoration-1 underline-offset-4">
+            <a href={`/blog/tags#${tag}`} class="swiss-label border border-base-content px-2 py-1 hover:border-pepper hover:bg-pepper hover:text-white">
               #{tag}
             </a>
           ))}
@@ -116,6 +108,7 @@ const url = new URL(`/blog/${blog.slug}`, Astro.url.origin);
         <Comment pageTitle={blog.data.title} />
       </div>
     </footer>
-    
+      </div>
+    </div>
   </article>
 </BaseLayout>

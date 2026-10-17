@@ -3,98 +3,126 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Warm editorial palette tokens */
+/* =================================================================
+ * Swiss style (International Typographic Style) tokens
+ * ================================================================= */
 :root {
-  --color-almond: #fdf0d5;
-  --color-almond-soft: #f7e5c3;
-  --color-almond-contrast: #fff4ef;
-  --color-harbor: #003049;
-  --color-harbor-deep: #0f2533;
-  --color-harbor-soft: #173648;
-  --color-pepper: #d62828;
+  --swiss-bg: #ffffff;
+  --swiss-fg: #111111;
+  --swiss-muted: #6b6b6b;
+  --swiss-rule: #111111;
+  --swiss-red: #e30613;
+  --swiss-font:
+    "Inter", "Helvetica Neue", Helvetica, Arial, "PingFang SC",
+    "Hiragino Sans GB", "Noto Sans SC", "Source Han Sans SC",
+    "Microsoft YaHei", sans-serif;
+  --swiss-mono:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  /* legacy tokens kept for compatibility */
+  --color-pepper: var(--swiss-red);
 }
 
-/* Color scheme configuration to prevent Chrome's auto dark theme */
+[data-theme-type="dark"] {
+  --swiss-bg: #0a0a0a;
+  --swiss-fg: #f5f5f5;
+  --swiss-muted: #9a9a9a;
+  --swiss-rule: #f5f5f5;
+}
+
 :root,
 [data-theme-type="light"] {
-  color-scheme: light; /* This prevents Chrome's auto dark theme from taking effect */
+  color-scheme: light;
 }
 
 [data-theme-type="dark"] {
   color-scheme: dark;
 }
 
-/* Global styles with nesting support */
 html {
   @apply scroll-smooth;
-  /* Apply our base sans-serif font to the body by default */
-  font-family:
-    "Inter",
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    "Noto Sans",
-    sans-serif;
-}
-
-[data-theme-type="light"] body {
-  background-color: var(--color-almond);
-  color: var(--color-harbor);
-}
-
-[data-theme-type="dark"] body {
-  background-color: var(--color-harbor-deep) !important;
-  color: var(--color-almond) !important;
-}
-
-[data-theme-type="dark"] h1,
-[data-theme-type="dark"] h2,
-[data-theme-type="dark"] h3,
-[data-theme-type="dark"] h4,
-[data-theme-type="dark"] p,
-[data-theme-type="dark"] a,
-[data-theme-type="dark"] span {
-  color: inherit;
-}
-
-[data-theme-type="dark"] .text-base-content,
-[data-theme-type="dark"] .text-base-content\/80,
-[data-theme-type="dark"] .text-base-content\/70,
-[data-theme-type="dark"] .text-base-content\/50 {
-  color: var(--color-almond) !important;
-  opacity: 1 !important;
-}
-
-[data-theme-type="dark"] .border-base-content,
-[data-theme-type="dark"] .border-base-content\/20,
-[data-theme-type="dark"] .border-base-content\/30 {
-  border-color: var(--color-almond) !important;
-}
-
-[data-theme-type="dark"] .bg-base-100,
-[data-theme-type="dark"] .bg-base-100\/95 {
-  background-color: var(--color-harbor-deep) !important;
+  font-family: var(--swiss-font);
+  font-feature-settings:
+    "ss01" on,
+    "cv11" on;
 }
 
 body {
+  background-color: var(--swiss-bg);
+  color: var(--swiss-fg);
   @apply antialiased selection:bg-pepper selection:text-white;
 }
 
-/* Base typography for headings */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family:
-    "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times,
-    serif;
+  font-family: var(--swiss-font);
+  letter-spacing: -0.02em;
+}
+
+/* Alignment over decoration: no rounded corners, shadows, blur, gradients */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.backdrop-blur,
+.backdrop-blur-sm,
+.backdrop-blur-md,
+.backdrop-blur-lg,
+[class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+[class*="bg-gradient-"] {
+  background-image: none !important;
+}
+
+/* daisyUI component flattening (cards, badges, buttons) */
+.card {
+  @apply border border-base-content bg-transparent;
+}
+
+.badge {
+  @apply border-base-content bg-transparent text-base-content font-medium uppercase tracking-[0.12em] text-[0.68rem];
+}
+
+.btn {
+  @apply border border-base-content bg-transparent text-base-content font-semibold normal-case tracking-normal;
+  &:hover {
+    @apply border-pepper bg-pepper text-white;
+  }
+}
+
+.btn-primary {
+  @apply bg-base-content text-base-100;
+}
+
+.divider {
+  &::before,
+  &::after {
+    @apply h-px bg-base-content;
+  }
+}
+
+/* Swiss utility classes */
+@layer components {
+  .swiss-label {
+    @apply text-[0.6875rem] font-semibold uppercase tracking-[0.18em];
+  }
+  .swiss-rule {
+    @apply border-t border-base-content;
+  }
+  .swiss-grid {
+    @apply grid grid-cols-4 gap-x-4 md:grid-cols-12 md:gap-x-6;
+  }
 }
 
 kbd {
@@ -103,45 +131,119 @@ kbd {
 
 code {
   font-size: 0.875em;
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  font-family: var(--swiss-mono);
 }
 
 .scrollbar-none {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none;
   }
 }
 
-/* Softened editorial shadow helpers */
+/* Legacy helpers kept as no-ops so older markup doesn't break */
 @layer utilities {
-  .brutal-shadow {
-    text-shadow: 2px 2px 0px rgb(0 48 73 / 18%);
-  }
+  .brutal-shadow,
   .brutal-shadow-dark {
-    text-shadow: 2px 2px 0px rgb(253 240 213 / 22%);
+    text-shadow: none;
   }
 }
 
-[data-theme-type="dark"] .group:hover .group-hover\:brutal-shadow,
-[data-theme-type="dark"] .hover\:brutal-shadow:hover {
-  text-shadow: 2px 2px 0px rgb(253 240 213 / 22%) !important;
+/* Post body: readable measure and Chinese-friendly leading */
+.swiss-prose {
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  max-width: 42rem;
+  color: var(--swiss-fg);
+
+  @media (min-width: 768px) {
+    font-size: 1.125rem;
+  }
+
+  h2,
+  h3,
+  h4 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--swiss-fg);
+  }
+
+  h2 {
+    border-top: 1px solid var(--swiss-rule);
+    padding-top: 1.25rem;
+    margin-top: 3.5rem;
+  }
+
+  a {
+    color: var(--swiss-fg);
+    text-decoration-color: var(--swiss-red);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    &:hover {
+      color: var(--swiss-red);
+    }
+  }
+
+  blockquote {
+    border-left: 4px solid var(--swiss-red);
+    font-style: normal;
+    font-weight: 500;
+    color: var(--swiss-fg);
+    quotes: none;
+    p::before,
+    p::after {
+      content: none;
+    }
+  }
+
+  hr {
+    border-color: var(--swiss-rule);
+  }
+
+  strong {
+    color: var(--swiss-fg);
+  }
+
+  :not(pre) > code {
+    background: transparent;
+    border-bottom: 1px solid var(--swiss-red);
+    padding: 0 0.15em;
+    font-weight: 500;
+    &::before,
+    &::after {
+      content: none;
+    }
+  }
+
+  table th {
+    @apply swiss-label;
+    border-bottom: 1px solid var(--swiss-rule);
+  }
+
+  /* Code blocks may break out wider than the text measure */
+  .expressive-code {
+    margin: 2rem 0;
+  }
 }
 
-[data-theme-type="light"] .group:hover .group-hover\:brutal-shadow,
-[data-theme-type="light"] .hover\:brutal-shadow:hover {
-  text-shadow: 2px 2px 0px rgb(0 48 73 / 18%) !important;
+/* Expressive Code: flat, minimal */
+.expressive-code {
+  .frame {
+    box-shadow: none !important;
+  }
+  figure,
+  pre {
+    border-radius: 0 !important;
+  }
 }
 
-/* Code block styling aligned with the new accent palette */
+/* Legacy frosti-code blocks */
 .frosti-code {
-  @apply relative my-8 border-y-2 border-base-content bg-transparent overflow-hidden;
+  @apply relative my-8 border border-base-content bg-transparent overflow-hidden;
 
   &-toolbar {
-    @apply sticky top-0 z-10 flex justify-between items-center px-4 py-3 border-b-2 border-base-content text-xs font-mono uppercase tracking-widest text-base-content;
+    @apply sticky top-0 z-10 flex justify-between items-center px-4 py-2 border-b border-base-content text-xs font-mono uppercase tracking-widest text-base-content;
     &-language {
       @apply text-xs font-bold text-accent;
     }
@@ -160,24 +262,139 @@ code {
 
       &::before {
         content: counter(line);
-        @apply text-base-content/20 mr-6 inline-block w-4 text-right select-none;
+        @apply text-base-content/30 mr-6 inline-block w-4 text-right select-none;
       }
     }
   }
 }
 
-/* Essential overrides for Pagefind search to match minimal style */
+/* Pagefind search */
 #pagefind-search {
   --pagefind-ui-scale: 1;
-  --pagefind-ui-primary: oklch(var(--a));
-  --pagefind-ui-text: oklch(var(--bc));
+  --pagefind-ui-primary: var(--swiss-red);
+  --pagefind-ui-text: var(--swiss-fg);
   --pagefind-ui-background: transparent;
-  --pagefind-ui-border: oklch(var(--bc));
-  --pagefind-ui-border-width: 2px;
+  --pagefind-ui-border: var(--swiss-rule);
+  --pagefind-ui-border-width: 1px;
   --pagefind-ui-border-radius: 0;
-  --pagefind-ui-font: "Inter", sans-serif;
+  --pagefind-ui-font: var(--swiss-font);
 
   .pagefind-ui__search-input {
-    @apply input w-full rounded-none border-x-0 border-t-0 border-b-4 border-base-content focus:border-primary px-0 focus:outline-none bg-transparent font-serif text-2xl placeholder:text-base-content/20 transition-colors;
+    @apply input w-full rounded-none border-x-0 border-t-0 border-b-2 border-base-content focus:border-pepper px-0 focus:outline-none bg-transparent font-sans font-bold text-2xl placeholder:text-base-content/25 transition-colors;
   }
+}
+
+/* =================================================================
+ * Archives / tags / categories (class-based markup)
+ * ================================================================= */
+.timeline-year {
+  @apply grid grid-cols-4 gap-x-4 border-t-4 border-base-content pt-4 pb-10 md:grid-cols-12 md:gap-x-6;
+}
+.year-header {
+  @apply col-span-4 md:col-span-3;
+}
+.year-badge {
+  @apply text-5xl font-extrabold tabular-nums tracking-[-0.04em] md:text-6xl;
+}
+.year-content {
+  @apply col-span-4 md:col-span-9;
+}
+.timeline-month + .timeline-month {
+  @apply mt-8;
+}
+.month-title {
+  @apply swiss-label flex items-center gap-3 border-b border-base-content pb-2 text-pepper;
+}
+.month-icon {
+  @apply hidden;
+}
+.month-count {
+  @apply ml-auto text-base-content/50;
+}
+.archive-item {
+  @apply border-b border-base-content/20;
+}
+.archive-card {
+  @apply grid grid-cols-1 gap-1 py-4 md:grid-cols-9 md:gap-x-6;
+  &:hover .archive-title {
+    @apply text-pepper;
+  }
+}
+.archive-date {
+  @apply swiss-label tabular-nums text-base-content/55 md:col-span-2 md:pt-1;
+}
+.archive-title {
+  @apply text-lg font-bold tracking-tight md:col-span-7;
+}
+.archive-description {
+  @apply text-sm text-base-content/60 md:col-span-7 md:col-start-3;
+}
+
+.tags-cloud {
+  @apply flex flex-wrap gap-2;
+}
+.tags-item {
+  @apply border border-base-content px-3 py-1 font-semibold transition-colors;
+  &:hover {
+    @apply border-pepper bg-pepper text-white;
+  }
+}
+.tags-content {
+  @apply flex items-baseline gap-2;
+  svg {
+    @apply hidden;
+  }
+}
+.tags-count {
+  @apply text-[0.7em] tabular-nums opacity-60;
+}
+
+.categories-grid {
+  @apply border-t border-base-content;
+}
+.category-card {
+  @apply border-b border-base-content;
+}
+.category-header {
+  @apply flex cursor-pointer items-center justify-between py-4;
+  &:hover {
+    @apply text-pepper;
+  }
+}
+.category-title {
+  @apply flex items-center gap-3 text-xl font-bold tracking-tight;
+}
+.category-icon {
+  @apply hidden;
+}
+.category-count {
+  @apply swiss-label text-pepper;
+}
+.toggle-icon {
+  @apply h-5 w-5 transition-transform;
+}
+.category-content {
+  @apply overflow-hidden transition-[max-height] duration-300;
+}
+.post-item {
+  @apply border-t border-base-content/20;
+}
+.post-link {
+  @apply flex items-baseline justify-between gap-4 py-3;
+  &:hover .post-title {
+    @apply text-pepper;
+  }
+}
+.post-date {
+  @apply swiss-label shrink-0 tabular-nums text-base-content/55;
+}
+
+.empty-state {
+  @apply py-16;
+}
+.empty-icon {
+  @apply hidden;
+}
+.empty-text {
+  @apply text-2xl font-bold;
 }
