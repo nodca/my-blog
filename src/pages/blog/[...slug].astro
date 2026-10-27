@@ -5,6 +5,7 @@ import Comment from "@components/widgets/Comment.astro";
 import License from "@components/widgets/License.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import dayjs from "@utils/dayjs";
+import { groupOf } from "@/data/postGroups";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -18,104 +19,136 @@ interface Props {
 }
 
 const { blog } = Astro.props;
-const { Content, remarkPluginFrontmatter } = await blog.render();
+const { Content, remarkPluginFrontmatter, headings } = await blog.render();
 const displayDate = blog.data.pubDate
-  ? dayjs(blog.data.pubDate).format("YYYY.MM.DD")
+  ? dayjs(blog.data.pubDate).format("YYYY 年 M 月 D 日")
   : "";
+const group = groupOf(blog.slug, blog.data.tags);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const url = new URL(`/blog/${blog.slug}`, Astro.url.origin);
 ---
 
 <BaseLayout
   title={blog.data.title}
   description={blog.data.description}
+  wide
 >
-  <article class="max-w-3xl mx-auto py-12 md:py-20 antialiased w-full">
-    
-    <!-- Editorial Post Header -->
-    <header class="mb-14 md:mb-20">
-      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-base-content mb-8 font-serif leading-[1.15]">
-        {blog.data.title}
-      </h1>
-      
-      {blog.data.description && (
-        <p class="text-xl md:text-2xl text-base-content/60 font-medium leading-relaxed mb-8">
-          {blog.data.description}
+  <svg class="post-strip" viewBox="0 0 1000 36" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="0,28 1000,6 1000,14 0,36"></polygon>
+  </svg>
+
+  <div class="post-grid">
+    <article class="min-w-0">
+      <header class="mb-12 max-w-[680px]">
+        <p class="mb-3 text-[15px] text-[color:var(--faded-ink)]">{group}</p>
+        <h1 class="text-[32px] md:text-[42px] font-bold leading-[1.25] text-base-content">
+          {blog.data.title}
+        </h1>
+        {blog.data.description && (
+          <p class="mt-5 text-lg leading-relaxed text-[color:var(--faded-ink)]">
+            {blog.data.description}
+          </p>
+        )}
+        <p class="mt-5 text-[15px] text-[color:var(--faded-ink)]">
+          <time datetime={blog.data.pubDate.toISOString()}>{displayDate}</time>
+          {remarkPluginFrontmatter?.readingTime && <span>，约 {remarkPluginFrontmatter.readingTime} 分钟</span>}
         </p>
+      </header>
+
+      {blog.data.image && (
+        <figure class="mb-12 max-w-[680px]">
+          <Image
+            src={blog.data.image}
+            alt={blog.data.title}
+            width={1200}
+            height={630}
+            class="w-full h-auto object-cover"
+            loading="eager"
+          />
+        </figure>
       )}
 
-      <!-- Minimalist Meta Information -->
-      <div class="flex flex-wrap items-center gap-4 text-sm font-mono text-base-content/50 border-t border-base-content/10 pt-6">
-        <time datetime={blog.data.pubDate.toISOString()}>
-          {displayDate}
-        </time>
-        
-        {remarkPluginFrontmatter?.readingTime && (
-          <>
-            <span class="opacity-40">&bull;</span>
-            <span>{remarkPluginFrontmatter.readingTime}</span>
-          </>
-        )}
-        
-        {blog.data.categories?.length > 0 && (
-          <>
-            <span class="opacity-40">&bull;</span>
-            <span class="uppercase tracking-widest">{blog.data.categories[0]}</span>
-          </>
-        )}
+      <div id="content" class="post-body mb-20">
+        <Content />
       </div>
-    </header>
 
-    <!-- Hero Image (if exists) -->
-    {blog.data.image && (
-      <figure class="mb-16 -mx-6 sm:mx-0">
-        <Image 
-          src={blog.data.image} 
-          alt={blog.data.title} 
-          width={1200} 
-          height={630} 
-          class="w-full h-auto object-cover sm:rounded-lg"
-          loading="eager"
+      <footer class="max-w-[680px] border-t-2 border-base-content pt-8">
+        {blog.data.tags?.length > 0 && (
+          <p class="mb-8 text-[15px]">
+            <span class="text-[color:var(--faded-ink)]">标签：</span>
+            {blog.data.tags.map((tag: string, i: number) => (
+              <>
+                {i > 0 && "、"}
+                <a href={`/blog/tags#${tag}`} class="ink-link">{tag}</a>
+              </>
+            ))}
+          </p>
+        )}
+
+        <License
+          url={url}
+          title={blog.data.title}
+          image={blog.data.image}
+          pubDate={blog.data.pubDate}
+          badge={blog.data.badge}
+          categories={blog.data.categories}
+          tags={blog.data.tags}
+          word={remarkPluginFrontmatter.totalCharCount}
+          time={remarkPluginFrontmatter.readingTime}
         />
-      </figure>
-    )}
 
-    <!-- Prose Content -->
-    <div 
-      id="content" 
-      class="prose prose-lg md:prose-xl max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-a:font-medium prose-a:underline-offset-4 prose-a:decoration-1 hover:prose-a:decoration-2 prose-blockquote:border-l-base-content/20 prose-blockquote:text-base-content/70 prose-blockquote:font-serif prose-blockquote:italic prose-img:rounded-lg prose-img:w-full mb-24"
-    >
-      <Content />
-    </div>
-
-    <!-- Article Footer (Tags & License) -->
-    <footer class="border-t border-base-content/10 pt-10 mt-10">
-      {blog.data.tags?.length > 0 && (
-        <div class="flex flex-wrap gap-2 mb-10">
-          <span class="text-sm font-medium text-base-content/40 uppercase tracking-widest mr-2">Tags:</span>
-          {blog.data.tags.map((tag: string) => (
-            <a href={`/blog/tags#${tag}`} class="text-sm font-mono text-base-content/60 hover:text-base-content transition-colors underline decoration-1 underline-offset-4">
-              #{tag}
-            </a>
-          ))}
+        <div class="mt-16">
+          <Comment pageTitle={blog.data.title} />
         </div>
-      )}
+      </footer>
+    </article>
 
-      <License
-        url={url}
-        title={blog.data.title}
-        image={blog.data.image}
-        pubDate={blog.data.pubDate}
-        badge={blog.data.badge}
-        categories={blog.data.categories}
-        tags={blog.data.tags}
-        word={remarkPluginFrontmatter.totalCharCount}
-        time={remarkPluginFrontmatter.readingTime}
-      />
-      
-      <div class="mt-16">
-        <Comment pageTitle={blog.data.title} />
-      </div>
-    </footer>
-    
-  </article>
+    {toc.length > 2 && (
+      <aside class="post-toc" aria-label="本文目录">
+        <p class="mb-3 text-sm font-bold">本文目录</p>
+        <ol>
+          {toc.map((h) => (
+            <li class:list={[h.depth === 3 && "pl-4"]}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </aside>
+    )}
+  </div>
 </BaseLayout>
+
+<style>
+  .post-strip {
+    display: block;
+    width: 100%;
+    height: 36px;
+    margin-top: -1rem;
+    overflow: visible;
+  }
+  .post-strip polygon { fill: var(--print-red); }
+  .post-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4rem;
+  }
+  .post-toc { display: none; }
+  @media (min-width: 1200px) {
+    .post-grid { grid-template-columns: minmax(0, 680px) 15rem; justify-content: space-between; }
+    .post-toc {
+      display: block;
+      position: sticky;
+      top: 6rem;
+      align-self: start;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.5;
+      border-left: 2px solid var(--ink);
+      padding-left: 1rem;
+    }
+    .post-toc li + li { margin-top: 0.5rem; }
+    .post-toc a { color: var(--faded-ink); }
+    .post-toc a:hover { color: var(--page-fg); text-decoration: underline; text-decoration-color: var(--print-red); text-decoration-thickness: 2px; }
+  }
+</style>
