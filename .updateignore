@@ -27,3 +27,18 @@ node_modules/
 # --- 脚本和脚本自身 ---
 frosti.update.sh
 .updateignore
+
+# --- 构成主义改版（constructivist-redesign）---
+astro.config.mjs
+tailwind.config.mjs
+package.json
+pnpm-lock.yaml
+src/styles/global.scss
+src/layouts/BaseLayout.astro
+src/components/Navbar.astro
+src/components/Footer.astro
+src/components/EditorialPostListItem.astro
+src/components/PosterHero.astro
+src/data/postGroups.ts
+src/pages/index.astro
+src/pages/blog/[...slug].astro

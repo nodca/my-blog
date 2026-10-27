@@ -26,9 +26,31 @@ export default defineConfig({
     },
   },
   integrations: [updateConfig(), expressiveCode({
-    themes: [CODE_THEME],
+    // Light + dark code themes follow the site's data-theme-type switch.
+    // CODE_THEME (frosti.config.yaml) is kept as the dark theme.
+    themes: ["github-light", CODE_THEME],
+    useDarkModeMediaQuery: false,
+    themeCssSelector: (theme) =>
+      `[data-theme-type="${theme.type === "dark" ? "dark" : "light"}"]`,
     styleOverrides: {
-      borderRadius: "0.75rem",
+      borderRadius: "0",
+      borderWidth: "0",
+      codeFontFamily: '"JetBrains Mono", "Sarasa Mono SC", ui-monospace, monospace',
+      uiFontFamily: '"Archivo Variable", "PingFang SC", "Microsoft YaHei", sans-serif',
+      codeFontSize: "0.875rem",
+      codeLineHeight: "1.7",
+      codeBackground: ({ theme }) => (theme.type === "dark" ? "#1F1C18" : "#DCD3BF"),
+      frames: {
+        shadowColor: "transparent",
+        editorTabBarBackground: ({ theme }) => (theme.type === "dark" ? "#2A2621" : "#CFC5AE"),
+        editorActiveTabBackground: ({ theme }) => (theme.type === "dark" ? "#1F1C18" : "#DCD3BF"),
+        editorActiveTabIndicatorTopColor: "transparent",
+        editorActiveTabIndicatorBottomColor: "transparent",
+        terminalTitlebarBackground: ({ theme }) => (theme.type === "dark" ? "#2A2621" : "#CFC5AE"),
+        terminalBackground: ({ theme }) => (theme.type === "dark" ? "#1F1C18" : "#DCD3BF"),
+        terminalTitlebarDotsOpacity: "0",
+        frameBoxShadowCssValue: "none",
+      },
     },
   }), mdx(), icon(), terser({
     compress: true,

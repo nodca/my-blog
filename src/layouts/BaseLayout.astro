@@ -3,13 +3,15 @@ import { ClientRouter } from "astro:transitions";
 import Footer from "@components/Footer.astro";
 import Header from "@components/Header.astro";
 import Navbar from "@components/Navbar.astro";
-// Import typography fonts
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/500.css";
-import "@fontsource/inter/600.css";
-import "@fontsource/playfair-display/400.css";
-import "@fontsource/playfair-display/600.css";
-import "@fontsource/playfair-display/700.css";
+// Self-hosted fonts (bundled, no runtime CDN).
+// Archivo variable (wdth axis) for Latin display + body.
+import "@fontsource-variable/archivo/wdth.css";
+// Noto Sans SC 400/700, split by unicode-range: browsers fetch just the
+// slices a page uses. Body Chinese prefers PingFang SC / Microsoft YaHei.
+import "@fontsource/noto-sans-sc/400.css";
+import "@fontsource/noto-sans-sc/700.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/700.css";
 import {
   SITE_DESCRIPTION,
   SITE_FAVICON,
@@ -23,6 +25,7 @@ const {
   image,
   description = SITE_DESCRIPTION,
   isIndexed = true,
+  wide = false,
 } = Astro.props;
 ---
 
@@ -61,19 +64,16 @@ const {
   </head>
 
   <body class="flex flex-col min-h-screen text-base-content font-sans antialiased relative" {...isIndexed ? { "data-pagefind-body": true } : {}}>
-    
-    <!-- Avant-garde Noise Overlay (Subtle Grain) -->
-    <div class="pointer-events-none fixed inset-0 z-50 h-full w-full opacity-[0.04] mix-blend-overlay" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
 
     <Navbar />
 
-    <div class="w-full flex-grow pt-28 pb-16">
-      <main class="max-w-3xl mx-auto px-6 sm:px-8 w-full flex flex-col gap-16">
+    <div class="w-full flex-grow pt-24 pb-12">
+      <main class:list={["mx-auto px-5 sm:px-8 w-full flex flex-col gap-16", wide ? "max-w-6xl" : "max-w-3xl"]}>
         <slot />
-        <div class="mt-20 pt-10 border-t-2 border-base-content/20 flex justify-center">
-          <Footer />
-        </div>
       </main>
+      <div class:list={["mx-auto px-5 sm:px-8 w-full mt-24", wide ? "max-w-6xl" : "max-w-3xl"]}>
+        <Footer />
+      </div>
     </div>
 
     <script define:vars={{ SITE_THEME }} is:inline>

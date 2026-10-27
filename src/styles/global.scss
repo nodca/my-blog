@@ -1,91 +1,68 @@
-/* Use postcss-nesting */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Warm editorial palette tokens */
-:root {
-  --color-almond: #fdf0d5;
-  --color-almond-soft: #f7e5c3;
-  --color-almond-contrast: #fff4ef;
-  --color-harbor: #003049;
-  --color-harbor-deep: #0f2533;
-  --color-harbor-soft: #173648;
-  --color-pepper: #d62828;
-}
-
-/* Color scheme configuration to prevent Chrome's auto dark theme */
+/*
+ * Constructivist poster palette.
+ * Three inks (red, black, faded ink) on two paper tones.
+ * Boldness lives in the home hero only; everything else is quiet.
+ */
 :root,
 [data-theme-type="light"] {
-  color-scheme: light; /* This prevents Chrome's auto dark theme from taking effect */
+  color-scheme: light;
+  --print-red: #d8341e;
+  --ink: #000000;
+  --newsprint: #ede6d6;
+  --paper-shade: #dcd3bf;
+  --faded-ink: #5a5650;
+  --page-bg: var(--newsprint);
+  --page-fg: var(--ink);
+  --link-line: var(--print-red);
+  /* hero inks */
+  --hero-paper: #ede6d6;
+  --hero-band: #000000;
+  --hero-on-band: #ede6d6;
+  --hero-stripe: #000000;
+  --hero-sun: #d8341e;
+  --hero-grain-opacity: 0.22;
 }
 
 [data-theme-type="dark"] {
   color-scheme: dark;
+  --print-red: #e8502f;
+  --ink: #ede6d6;
+  --paper-shade: #1f1c18;
+  --faded-ink: #a8a196;
+  --page-bg: #141210;
+  --page-fg: #ede6d6;
+  --link-line: #e8502f;
+  --hero-paper: #141210;
+  --hero-band: #ede6d6;
+  --hero-on-band: #000000;
+  --hero-stripe: #ede6d6;
+  --hero-sun: #e8502f;
+  --hero-grain-opacity: 0.12;
 }
 
-/* Global styles with nesting support */
 html {
   @apply scroll-smooth;
-  /* Apply our base sans-serif font to the body by default */
   font-family:
-    "Inter",
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    "Noto Sans",
-    sans-serif;
-}
-
-[data-theme-type="light"] body {
-  background-color: var(--color-almond);
-  color: var(--color-harbor);
-}
-
-[data-theme-type="dark"] body {
-  background-color: var(--color-harbor-deep) !important;
-  color: var(--color-almond) !important;
-}
-
-[data-theme-type="dark"] h1,
-[data-theme-type="dark"] h2,
-[data-theme-type="dark"] h3,
-[data-theme-type="dark"] h4,
-[data-theme-type="dark"] p,
-[data-theme-type="dark"] a,
-[data-theme-type="dark"] span {
-  color: inherit;
-}
-
-[data-theme-type="dark"] .text-base-content,
-[data-theme-type="dark"] .text-base-content\/80,
-[data-theme-type="dark"] .text-base-content\/70,
-[data-theme-type="dark"] .text-base-content\/50 {
-  color: var(--color-almond) !important;
-  opacity: 1 !important;
-}
-
-[data-theme-type="dark"] .border-base-content,
-[data-theme-type="dark"] .border-base-content\/20,
-[data-theme-type="dark"] .border-base-content\/30 {
-  border-color: var(--color-almond) !important;
-}
-
-[data-theme-type="dark"] .bg-base-100,
-[data-theme-type="dark"] .bg-base-100\/95 {
-  background-color: var(--color-harbor-deep) !important;
+    "Archivo Variable", "PingFang SC", "Microsoft YaHei", "Noto Sans SC",
+    ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--page-bg);
 }
 
 body {
-  @apply antialiased selection:bg-pepper selection:text-white;
+  background-color: var(--page-bg);
+  color: var(--page-fg);
+  @apply antialiased;
 }
 
-/* Base typography for headings */
+::selection {
+  background: var(--print-red);
+  color: #ede6d6;
+}
+
 h1,
 h2,
 h3,
@@ -93,91 +70,194 @@ h4,
 h5,
 h6 {
   font-family:
-    "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times,
-    serif;
+    "Archivo Variable", "Noto Sans SC", "PingFang SC", "Microsoft YaHei",
+    sans-serif;
+}
+
+:focus-visible {
+  outline: 3px solid var(--print-red);
+  outline-offset: 3px;
 }
 
 kbd {
   @apply kbd;
 }
 
-code {
-  font-size: 0.875em;
+code,
+pre,
+kbd,
+samp {
   font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+    "JetBrains Mono", "Sarasa Mono SC", ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
 }
 
 .scrollbar-none {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none;
   }
 }
 
-/* Softened editorial shadow helpers */
-@layer utilities {
-  .brutal-shadow {
-    text-shadow: 2px 2px 0px rgb(0 48 73 / 18%);
+/* Links: ink text with a red underline that thickens on hover. */
+.ink-link {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: var(--link-line);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-thickness 120ms ease-out;
+  &:hover {
+    text-decoration-thickness: 4px;
   }
-  .brutal-shadow-dark {
-    text-shadow: 2px 2px 0px rgb(253 240 213 / 22%);
+}
+
+/* ---------- Long-form reading ---------- */
+.post-body {
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--page-fg);
+  max-width: 680px;
+
+  > * + * {
+    margin-top: 1.1em;
   }
-}
 
-[data-theme-type="dark"] .group:hover .group-hover\:brutal-shadow,
-[data-theme-type="dark"] .hover\:brutal-shadow:hover {
-  text-shadow: 2px 2px 0px rgb(253 240 213 / 22%) !important;
-}
+  p,
+  li {
+    text-align: left;
+    overflow-wrap: break-word;
+  }
 
-[data-theme-type="light"] .group:hover .group-hover\:brutal-shadow,
-[data-theme-type="light"] .hover\:brutal-shadow:hover {
-  text-shadow: 2px 2px 0px rgb(0 48 73 / 18%) !important;
-}
+  h2,
+  h3,
+  h4 {
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0;
+    scroll-margin-top: 6rem;
+  }
 
-/* Code block styling aligned with the new accent palette */
-.frosti-code {
-  @apply relative my-8 border-y-2 border-base-content bg-transparent overflow-hidden;
+  h2 {
+    font-size: 27px;
+    margin-top: 2.6em;
+    padding-left: 0.7em;
+    border-left: 6px solid var(--ink);
+  }
 
-  &-toolbar {
-    @apply sticky top-0 z-10 flex justify-between items-center px-4 py-3 border-b-2 border-base-content text-xs font-mono uppercase tracking-widest text-base-content;
-    &-language {
-      @apply text-xs font-bold text-accent;
+  h3 {
+    font-size: 21px;
+    margin-top: 2em;
+  }
+
+  h4 {
+    font-size: 17px;
+    margin-top: 1.6em;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-color: var(--link-line);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.22em;
+    &:hover {
+      text-decoration-thickness: 4px;
     }
   }
 
-  &-content {
-    @apply overflow-x-auto p-4 bg-transparent text-sm leading-relaxed;
+  strong {
+    font-weight: 700;
+  }
 
-    pre {
-      @apply bg-transparent;
-      counter-reset: line;
-    }
+  ul,
+  ol {
+    padding-left: 1.5em;
+  }
 
-    .line {
-      counter-increment: line;
+  ul {
+    list-style: square;
+  }
 
-      &::before {
-        content: counter(line);
-        @apply text-base-content/20 mr-6 inline-block w-4 text-right select-none;
-      }
-    }
+  ol {
+    list-style: decimal;
+  }
+
+  li + li {
+    margin-top: 0.35em;
+  }
+
+  li::marker {
+    color: var(--faded-ink);
+  }
+
+  blockquote {
+    background: var(--paper-shade);
+    padding: 0.9em 1.2em;
+    color: var(--page-fg);
+    border-left: 0;
+  }
+
+  hr {
+    border: 0;
+    height: 2px;
+    background: var(--ink);
+    width: 4rem;
+    margin: 3em 0;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    display: block;
+    overflow-x: auto;
+  }
+
+  th,
+  td {
+    border-bottom: 1px solid var(--faded-ink);
+    padding: 0.5em 0.8em 0.5em 0;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    border-bottom: 2px solid var(--ink);
+    font-weight: 700;
+  }
+
+  :not(pre) > code {
+    background: var(--paper-shade);
+    padding: 0.12em 0.36em;
+    font-size: 0.86em;
+  }
+
+  .expressive-code {
+    margin-top: 1.6em;
+    margin-bottom: 1.6em;
   }
 }
 
-/* Essential overrides for Pagefind search to match minimal style */
+/* Pagefind search: flat and square */
 #pagefind-search {
   --pagefind-ui-scale: 1;
-  --pagefind-ui-primary: oklch(var(--a));
-  --pagefind-ui-text: oklch(var(--bc));
-  --pagefind-ui-background: transparent;
-  --pagefind-ui-border: oklch(var(--bc));
+  --pagefind-ui-primary: var(--print-red);
+  --pagefind-ui-text: var(--page-fg);
+  --pagefind-ui-background: var(--page-bg);
+  --pagefind-ui-border: var(--page-fg);
   --pagefind-ui-border-width: 2px;
   --pagefind-ui-border-radius: 0;
-  --pagefind-ui-font: "Inter", sans-serif;
+  --pagefind-ui-font: "Archivo Variable", "PingFang SC", "Microsoft YaHei",
+    sans-serif;
 
   .pagefind-ui__search-input {
-    @apply input w-full rounded-none border-x-0 border-t-0 border-b-4 border-base-content focus:border-primary px-0 focus:outline-none bg-transparent font-serif text-2xl placeholder:text-base-content/20 transition-colors;
+    @apply input w-full rounded-none border-x-0 border-t-0 border-b-4 border-base-content px-0 focus:outline-none bg-transparent text-2xl placeholder:text-base-content/30;
   }
 }
